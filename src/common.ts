@@ -2,7 +2,7 @@
 
 "use strict";
 
-import { range, zip, isEqual, random } from "lodash-es";
+import { range, isEqual, random } from "lodash-es";
 
 import bcModSdk from "bondage-club-mod-sdk";
 
@@ -121,7 +121,7 @@ export async function waitFor(predicate: () => boolean, timeout: number = 10): P
 }
 
 /** The MBS version. */
-export const MBS_VERSION = "0.6.7";
+export const MBS_VERSION = "0.6.14";
 
 /** The MBS {@link ModSDKGlobalAPI} instance. */
 export const MBS_MOD_API = bcModSdk.registerMod({
@@ -318,15 +318,20 @@ export class Version {
         if (!(other instanceof Version)) {
             return false;
         }
-        const attrList = <[number | boolean, number | boolean][]>zip(this.values(), other.values());
-        for (const [thisAttr, otherAttr] of attrList) {
-            if (thisAttr > otherAttr) {
+
+        for (const attr of ["major", "minor", "micro"] as const) {
+            if (this[attr] > other[attr]) {
                 return true;
-            } else if (thisAttr < otherAttr) {
+            } else if (this[attr] < other[attr]) {
                 return false;
             }
         }
-        return false;
+
+        if (!this.beta && other.beta) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /** Check whether this version is lesser than the other */
@@ -421,7 +426,7 @@ export function isInteger(arg: unknown): arg is number {
  * @param func - The function in question
  * @returns The computed hash
  */
-export function getFunctionHash(func: (...args: unknown[]) => unknown): string {
+export function getFunctionHash(func: (...args: never[]) => unknown): string {
     if (typeof func !== "function") {
         throw new TypeError(`"func" expected a function; observed type: ${typeof func}`);
     }

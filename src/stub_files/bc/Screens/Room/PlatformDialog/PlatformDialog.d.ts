@@ -1,4 +1,10 @@
 /**
+ * Players the audio track for the dialog
+ * @param {string} Source - The source file to use
+ * @returns {void} - Nothing
+ */
+declare function PlatformDialogVoice(Source: string): void;
+/**
  * Loads the dialog at a specific position
  * @param {Number} Position - The position # to load
  * @returns {void} - Nothing
@@ -105,6 +111,37 @@ declare function PlatformDialogEvent(): void;
  * @returns {boolean} - TRUE if lover
  */
 declare function PlatformDialogIsLover(Name: string): boolean;
+/**
+ * Returns TRUE if two characters are lovers
+ * @param {String} Char1 - The name of the first character
+ * @param {String} Char2 - The name of the second character
+ * @returns {boolean} - TRUE if lover
+ */
+declare function PlatformDialogCharactersAreLovers(Char1: string, Char2: string): boolean;
+/**
+ * Returns TRUE if the character is Melody's slave, make sure that character or Melody is currently active
+ * @param {String} Name - The name of a character
+ * @returns {boolean} - TRUE if lover
+ */
+declare function PlatformDialogIsSlave(Name: string): boolean;
+/**
+ * Returns TRUE if the first character is the slave of the second character
+ * @param {String} Char1 - The name of the first character
+ * @param {String} Char2 - The name of the second character
+ * @returns {boolean} - TRUE if slave
+ */
+declare function PlatformDialogIsSlaveOfCharacter(Char1: string, Char2: string): boolean;
+/**
+ * Returns TRUE if the character is Melody's owner, make sure that character or Melody is currently active
+ * @param {String} Name - The name of a character
+ * @returns {boolean} - TRUE if lover
+ */
+declare function PlatformDialogIsOwner(Name: string): boolean;
+/**
+ * Called manually to output the full dialog text to the console for text proofing
+ * @returns {void} - Nothing
+ */
+declare function PlatformDialogOutputAll(): void;
 declare var PlatformDialog: any;
 declare var PlatformDialogBackground: any;
 declare var PlatformDialogText: any;
@@ -115,6 +152,7 @@ declare var PlatformDialogGoto: any;
 declare var PlatformDialogCharacterDisplay: any;
 declare var PlatformDialogPosition: number;
 declare var PlatformDialogCharacter: any;
+declare var PlatformDialogAudio: any;
 declare var PlatformDialogCharacterTemplate: ({
     Name: string;
     Color: string;
@@ -146,6 +184,7 @@ declare var PlatformDialogCharacterTemplate: ({
 })[];
 declare var PlatformDialogData: ({
     Name: string;
+    Music: string;
     Dialog: ({
         Text: string;
         Background: string;
@@ -156,10 +195,12 @@ declare var PlatformDialogData: ({
             X: number;
             Y: number;
         }[];
+        Audio?: undefined;
     } | {
         Text: string;
         Background?: undefined;
         Character?: undefined;
+        Audio?: undefined;
     } | {
         Character: {
             Name: string;
@@ -170,9 +211,16 @@ declare var PlatformDialogData: ({
         }[];
         Text?: undefined;
         Background?: undefined;
+        Audio?: undefined;
+    } | {
+        Text: string;
+        Audio: string;
+        Background?: undefined;
+        Character?: undefined;
     } | {
         Background: string;
         Text: string;
+        Audio: string;
         Character: {
             Name: string;
             Status: string;
@@ -180,6 +228,7 @@ declare var PlatformDialogData: ({
         }[];
     } | {
         Text: string;
+        Audio: string;
         Character: {
             Name: string;
             Status: string;
@@ -190,6 +239,7 @@ declare var PlatformDialogData: ({
     Exit?: undefined;
 } | {
     Name: string;
+    Music: string;
     Exit: () => void;
     Dialog: ({
         Background: string;
@@ -199,12 +249,14 @@ declare var PlatformDialogData: ({
             Pose: string;
         }[];
         Text?: undefined;
+        Audio?: undefined;
         Answer?: undefined;
         ID?: undefined;
     } | {
         Text: string;
         Background?: undefined;
         Character?: undefined;
+        Audio?: undefined;
         Answer?: undefined;
         ID?: undefined;
     } | {
@@ -214,22 +266,34 @@ declare var PlatformDialogData: ({
             Pose: string;
         }[];
         Text: string;
+        Audio: string;
         Answer: ({
             Text: string;
             Reply: string;
+            Audio: string;
             Goto?: undefined;
         } | {
             Text: string;
             Reply: string;
+            Audio: string;
             Goto: string;
         })[];
         Background?: undefined;
         ID?: undefined;
     } | {
         Text: string;
+        Audio: string;
+        Background?: undefined;
+        Character?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Audio: string;
         Answer: {
             Text: string;
             Reply: string;
+            Audio: string;
         }[];
         Background?: undefined;
         Character?: undefined;
@@ -239,10 +303,43 @@ declare var PlatformDialogData: ({
         Text: string;
         Background?: undefined;
         Character?: undefined;
+        Audio?: undefined;
         Answer?: undefined;
     })[];
 } | {
     Name: string;
+    Music: string;
+    Dialog: ({
+        Background: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Animation: string;
+        }[];
+        Text?: undefined;
+        Audio?: undefined;
+        Answer?: undefined;
+    } | {
+        Text: string;
+        Audio: string;
+        Background?: undefined;
+        Character?: undefined;
+        Answer?: undefined;
+    } | {
+        Text: string;
+        Audio: string;
+        Answer: {
+            Text: string;
+            Reply: string;
+            Audio: string;
+        }[];
+        Background?: undefined;
+        Character?: undefined;
+    })[];
+    Exit?: undefined;
+} | {
+    Name: string;
+    Music: string;
     Exit: () => void;
     Dialog: ({
         Background: string;
@@ -252,14 +349,17 @@ declare var PlatformDialogData: ({
             Animation: string;
         }[];
         Text?: undefined;
+        Audio?: undefined;
         Answer?: undefined;
     } | {
         Text: string;
+        Audio: string;
         Background?: undefined;
         Character?: undefined;
         Answer?: undefined;
     } | {
         Text: string;
+        Audio: string;
         Character: {
             Name: string;
             Status: string;
@@ -269,6 +369,7 @@ declare var PlatformDialogData: ({
         Answer?: undefined;
     } | {
         Text: string;
+        Audio: string;
         Character: {
             Name: string;
             Status: string;
@@ -281,28 +382,35 @@ declare var PlatformDialogData: ({
         Answer: ({
             Text: string;
             Reply: string;
+            Audio: string;
             Domination?: undefined;
         } | {
             Text: string;
             Reply: string;
+            Audio: string;
             Domination: number;
         })[];
         Background?: undefined;
         Character?: undefined;
+        Audio?: undefined;
     } | {
         Text: string;
+        Audio: string;
         Answer: ({
             Text: string;
             Reply: string;
+            Audio: string;
             Love?: undefined;
         } | {
             Text: string;
             Reply: string;
+            Audio: string;
             Love: number;
         })[];
         Background?: undefined;
         Character?: undefined;
     } | {
+        Audio: string;
         Character: {
             Name: string;
             Status: string;
@@ -313,22 +421,36 @@ declare var PlatformDialogData: ({
         Answer?: undefined;
     } | {
         Text: string;
+        Audio: string;
         Answer: ({
             Text: string;
             Reply: string;
+            Audio: string;
             Love: number;
             Domination?: undefined;
         } | {
             Text: string;
             Reply: string;
+            Audio: string;
             Domination: number;
             Love?: undefined;
         })[];
         Background?: undefined;
         Character?: undefined;
+    } | {
+        Text: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+        }[];
+        Background?: undefined;
+        Audio?: undefined;
+        Answer?: undefined;
     })[];
 } | {
     Name: string;
+    Music: string;
     Exit: () => void;
     Dialog: ({
         Background: string;
@@ -338,18 +460,44 @@ declare var PlatformDialogData: ({
             Animation: string;
         }[];
         Text?: undefined;
-        ID?: undefined;
+        Audio?: undefined;
         Answer?: undefined;
+        ID?: undefined;
         Entry?: undefined;
         TextScript?: undefined;
+        AudioScript?: undefined;
     } | {
         Text: string;
+        Audio: string;
+        Background?: undefined;
+        Character?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+        Entry?: undefined;
+        TextScript?: undefined;
+        AudioScript?: undefined;
+    } | {
+        Text: string;
+        Audio: string;
+        Answer: ({
+            Text: string;
+            Reply: string;
+            Audio: string;
+            Domination: number;
+            Love: number;
+        } | {
+            Text: string;
+            Reply: string;
+            Audio?: undefined;
+            Domination?: undefined;
+            Love?: undefined;
+        })[];
         Background?: undefined;
         Character?: undefined;
         ID?: undefined;
-        Answer?: undefined;
         Entry?: undefined;
         TextScript?: undefined;
+        AudioScript?: undefined;
     } | {
         Background: string;
         Character: {
@@ -359,26 +507,52 @@ declare var PlatformDialogData: ({
             X: number;
         }[];
         Text?: undefined;
-        ID?: undefined;
+        Audio?: undefined;
         Answer?: undefined;
+        ID?: undefined;
         Entry?: undefined;
         TextScript?: undefined;
+        AudioScript?: undefined;
+    } | {
+        Text: string;
+        Audio: string;
+        Answer: ({
+            Text: string;
+            Reply: string;
+            Audio: string;
+            Goto?: undefined;
+        } | {
+            Text: string;
+            Reply: string;
+            Audio: string;
+            Goto: string;
+        })[];
+        Background?: undefined;
+        Character?: undefined;
+        ID?: undefined;
+        Entry?: undefined;
+        TextScript?: undefined;
+        AudioScript?: undefined;
     } | {
         ID: string;
         Text: string;
+        Audio: string;
         Answer: ({
             Text: string;
             Reply: string;
+            Audio: string;
             Domination: number;
             Love?: undefined;
         } | {
             Text: string;
             Reply: string;
+            Audio: string;
             Domination?: undefined;
             Love?: undefined;
         } | {
             Text: string;
             Reply: string;
+            Audio: string;
             Love: number;
             Domination?: undefined;
         })[];
@@ -386,21 +560,26 @@ declare var PlatformDialogData: ({
         Character?: undefined;
         Entry?: undefined;
         TextScript?: undefined;
+        AudioScript?: undefined;
     } | {
         Text: string;
+        Audio: string;
         Answer: ({
             Text: string;
             Reply: string;
+            Audio: string;
             Domination: number;
             Love?: undefined;
         } | {
             Text: string;
             Reply: string;
+            Audio: string;
             Domination?: undefined;
             Love?: undefined;
         } | {
             Text: string;
             Reply: string;
+            Audio: string;
             Love: number;
             Domination: number;
         })[];
@@ -409,21 +588,26 @@ declare var PlatformDialogData: ({
         ID?: undefined;
         Entry?: undefined;
         TextScript?: undefined;
+        AudioScript?: undefined;
     } | {
         Text: string;
+        Audio: string;
         Answer: ({
             Text: string;
             Reply: string;
+            Audio: string;
             Love?: undefined;
             Domination?: undefined;
         } | {
             Text: string;
             Reply: string;
+            Audio: string;
             Love: number;
             Domination?: undefined;
         } | {
             Text: string;
             Reply: string;
+            Audio: string;
             Love: number;
             Domination: number;
         })[];
@@ -432,42 +616,72 @@ declare var PlatformDialogData: ({
         ID?: undefined;
         Entry?: undefined;
         TextScript?: undefined;
+        AudioScript?: undefined;
     } | {
         Entry: () => void;
         Background?: undefined;
         Character?: undefined;
         Text?: undefined;
-        ID?: undefined;
+        Audio?: undefined;
         Answer?: undefined;
+        ID?: undefined;
         TextScript?: undefined;
+        AudioScript?: undefined;
     } | {
         ID: string;
         Text: string;
+        Audio: string;
         Background?: undefined;
         Character?: undefined;
         Answer?: undefined;
         Entry?: undefined;
         TextScript?: undefined;
+        AudioScript?: undefined;
     } | {
         Text: string;
+        Audio: string;
+        Answer: ({
+            Text: string;
+            Reply: string;
+            Audio: string;
+            Love: number;
+        } | {
+            Text: string;
+            Reply: string;
+            Audio?: undefined;
+            Love?: undefined;
+        })[];
+        Background?: undefined;
+        Character?: undefined;
+        ID?: undefined;
+        Entry?: undefined;
+        TextScript?: undefined;
+        AudioScript?: undefined;
+    } | {
+        Text: string;
+        Audio: string;
         Answer: ({
             Text: string;
             Reply: string;
             Domination: number;
+            Audio?: undefined;
             Goto?: undefined;
         } | {
             Text: string;
             Reply: string;
             Domination?: undefined;
+            Audio?: undefined;
             Goto?: undefined;
         } | {
             Text: string;
             Reply: string;
+            Audio: string;
             Goto: string;
             Domination: number;
         } | {
             Text: string;
             Reply: string;
+            Audio: string;
             Goto: string;
             Domination?: undefined;
         })[];
@@ -476,6 +690,7 @@ declare var PlatformDialogData: ({
         ID?: undefined;
         Entry?: undefined;
         TextScript?: undefined;
+        AudioScript?: undefined;
     } | {
         Text: string;
         Character: {
@@ -484,20 +699,35 @@ declare var PlatformDialogData: ({
             Pose: string;
         }[];
         Background?: undefined;
-        ID?: undefined;
+        Audio?: undefined;
         Answer?: undefined;
+        ID?: undefined;
         Entry?: undefined;
         TextScript?: undefined;
+        AudioScript?: undefined;
     } | {
-        TextScript: () => "Can I have my orgasm Lady Olivia?" | "It's time for the climax";
+        Text: string;
+        Background?: undefined;
+        Character?: undefined;
+        Audio?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+        Entry?: undefined;
+        TextScript?: undefined;
+        AudioScript?: undefined;
+    } | {
+        TextScript: () => "Can I have my orgasm Lady Olivia?" | "It's time for the climax.";
+        AudioScript: () => "O221" | "O222";
         Background?: undefined;
         Character?: undefined;
         Text?: undefined;
-        ID?: undefined;
+        Audio?: undefined;
         Answer?: undefined;
+        ID?: undefined;
         Entry?: undefined;
     } | {
         TextScript: () => "Yes, you can have your orgasm my maid." | "(She smiles and watches you carefully.)";
+        AudioScript: () => string;
         Character: {
             Name: string;
             Status: string;
@@ -506,21 +736,24 @@ declare var PlatformDialogData: ({
         }[];
         Background?: undefined;
         Text?: undefined;
-        ID?: undefined;
+        Audio?: undefined;
         Answer?: undefined;
+        ID?: undefined;
         Entry?: undefined;
     } | {
         Entry: () => void;
         Text: string;
+        Audio: string;
         Character: {
             Name: string;
             Status: string;
             Pose: string;
         }[];
         Background?: undefined;
-        ID?: undefined;
         Answer?: undefined;
+        ID?: undefined;
         TextScript?: undefined;
+        AudioScript?: undefined;
     } | {
         Text: string;
         Character: {
@@ -530,10 +763,12 @@ declare var PlatformDialogData: ({
             X: number;
         }[];
         Background?: undefined;
-        ID?: undefined;
+        Audio?: undefined;
         Answer?: undefined;
+        ID?: undefined;
         Entry?: undefined;
         TextScript?: undefined;
+        AudioScript?: undefined;
     } | {
         Background: string;
         Character: {
@@ -542,13 +777,30 @@ declare var PlatformDialogData: ({
             Pose: string;
         }[];
         Text?: undefined;
-        ID?: undefined;
+        Audio?: undefined;
         Answer?: undefined;
+        ID?: undefined;
         Entry?: undefined;
         TextScript?: undefined;
+        AudioScript?: undefined;
+    } | {
+        Text: string;
+        Audio: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+        }[];
+        Background?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+        Entry?: undefined;
+        TextScript?: undefined;
+        AudioScript?: undefined;
     })[];
 } | {
     Name: string;
+    Music: string;
     Exit: () => void;
     Dialog: ({
         Background: string;
@@ -558,10 +810,19 @@ declare var PlatformDialogData: ({
             Pose: string;
         }[];
         Text?: undefined;
+        Audio?: undefined;
         Answer?: undefined;
         ID?: undefined;
     } | {
         Text: string;
+        Background?: undefined;
+        Character?: undefined;
+        Audio?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Audio: string;
         Background?: undefined;
         Character?: undefined;
         Answer?: undefined;
@@ -573,13 +834,16 @@ declare var PlatformDialogData: ({
             Pose: string;
         }[];
         Text: string;
+        Audio: string;
         Answer: ({
             Text: string;
             Reply: string;
+            Audio: string;
             Goto?: undefined;
         } | {
             Text: string;
             Reply: string;
+            Audio: string;
             Goto: string;
         })[];
         Background?: undefined;
@@ -591,6 +855,7 @@ declare var PlatformDialogData: ({
             Pose: string;
         }[];
         Text: string;
+        Audio: string;
         Background?: undefined;
         Answer?: undefined;
         ID?: undefined;
@@ -602,11 +867,13 @@ declare var PlatformDialogData: ({
             Pose: string;
         }[];
         Text: string;
+        Audio: string;
         Background?: undefined;
         Answer?: undefined;
     })[];
 } | {
     Name: string;
+    Music: string;
     Exit: () => void;
     Dialog: ({
         Background: string;
@@ -616,88 +883,54 @@ declare var PlatformDialogData: ({
             Pose: string;
         }[];
         Text?: undefined;
+        Audio?: undefined;
         Answer?: undefined;
     } | {
         Text: string;
+        Audio: string;
         Background?: undefined;
         Character?: undefined;
         Answer?: undefined;
     } | {
         Text: string;
+        Audio: string;
         Answer: ({
             Text: string;
             Reply: string;
+            Audio: string;
             Domination?: undefined;
             Love?: undefined;
         } | {
             Text: string;
             Reply: string;
+            Audio: string;
             Domination: number;
             Love?: undefined;
         } | {
             Text: string;
             Reply: string;
+            Audio: string;
             Love: number;
             Domination?: undefined;
         } | {
             Text: string;
             Reply: string;
+            Audio: string;
             Domination: number;
             Love: number;
         })[];
         Background?: undefined;
         Character?: undefined;
-    })[];
-} | {
-    Name: string;
-    Exit: () => void;
-    Dialog: ({
-        Background: string;
-        Character: {
-            Name: string;
-            Status: string;
-            Pose: string;
-        }[];
-        TextScript?: undefined;
-        Text?: undefined;
-        Answer?: undefined;
-    } | {
-        TextScript: () => "Is it you Melody?  Are you a zombie?" | "Hey!  I'm Edlaran, a wood elf, are you a zombie?";
-        Background?: undefined;
-        Character?: undefined;
-        Text?: undefined;
-        Answer?: undefined;
-    } | {
-        Text: string;
-        Answer: ({
-            Text: string;
-            Reply: string;
-            Domination: number;
-            Love?: undefined;
-        } | {
-            Text: string;
-            Reply: string;
-            Domination?: undefined;
-            Love?: undefined;
-        } | {
-            Text: string;
-            Reply: string;
-            Love: number;
-            Domination?: undefined;
-        })[];
-        Background?: undefined;
-        Character?: undefined;
-        TextScript?: undefined;
     } | {
         Text: string;
         Background?: undefined;
         Character?: undefined;
-        TextScript?: undefined;
+        Audio?: undefined;
         Answer?: undefined;
     })[];
 } | {
     Name: string;
-    Exit: () => void;
+    Music: string;
     Dialog: ({
         Background: string;
         Character: {
@@ -706,53 +939,171 @@ declare var PlatformDialogData: ({
             Pose: string;
         }[];
         Text?: undefined;
+        Audio?: undefined;
         Answer?: undefined;
     } | {
         Text: string;
+        Audio: string;
         Background?: undefined;
         Character?: undefined;
         Answer?: undefined;
     } | {
         Text: string;
-        Answer: ({
-            Text: string;
-            Reply: string;
-            Domination?: undefined;
-            Script?: undefined;
-        } | {
-            Text: string;
-            Reply: string;
-            Domination: number;
-            Script?: undefined;
-        } | {
-            Text: string;
-            Script: () => void;
-            Reply?: undefined;
-            Domination?: undefined;
-        })[];
-        Background?: undefined;
-        Character?: undefined;
-    } | {
-        Text: string;
-        Character: {
-            Name: string;
-            Status: string;
-            Pose: string;
-        }[];
-        Background?: undefined;
-        Answer?: undefined;
-    } | {
-        Text: string;
+        Audio: string;
         Answer: {
             Text: string;
             Reply: string;
-            Love: number;
+            Audio: string;
         }[];
         Background?: undefined;
         Character?: undefined;
+    } | {
+        Text: string;
+        Background?: undefined;
+        Character?: undefined;
+        Audio?: undefined;
+        Answer?: undefined;
+    })[];
+    Exit?: undefined;
+} | {
+    Name: string;
+    Music: string;
+    Exit: () => void;
+    Dialog: ({
+        Background: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+        }[];
+        TextScript?: undefined;
+        AudioScript?: undefined;
+        Text?: undefined;
+        Audio?: undefined;
+        Answer?: undefined;
+    } | {
+        TextScript: () => "Is it you Melody?  Are you a zombie?" | "Hey!  I'm Edlaran, a wood elf, are you a zombie?";
+        AudioScript: () => "12" | "11";
+        Background?: undefined;
+        Character?: undefined;
+        Text?: undefined;
+        Audio?: undefined;
+        Answer?: undefined;
+    } | {
+        Text: string;
+        Audio: string;
+        Answer: ({
+            Text: string;
+            Reply: string;
+            Audio: string;
+            Domination: number;
+            Love?: undefined;
+        } | {
+            Text: string;
+            Reply: string;
+            Audio: string;
+            Domination?: undefined;
+            Love?: undefined;
+        } | {
+            Text: string;
+            Reply: string;
+            Audio: string;
+            Love: number;
+            Domination?: undefined;
+        })[];
+        Background?: undefined;
+        Character?: undefined;
+        TextScript?: undefined;
+        AudioScript?: undefined;
+    } | {
+        Text: string;
+        Audio: string;
+        Background?: undefined;
+        Character?: undefined;
+        TextScript?: undefined;
+        AudioScript?: undefined;
+        Answer?: undefined;
     })[];
 } | {
     Name: string;
+    Music: string;
+    Exit: () => void;
+    Dialog: ({
+        Background: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+        }[];
+        Text?: undefined;
+        Audio?: undefined;
+        Answer?: undefined;
+    } | {
+        Text: string;
+        Audio: string;
+        Background?: undefined;
+        Character?: undefined;
+        Answer?: undefined;
+    } | {
+        Text: string;
+        Audio: string;
+        Answer: ({
+            Text: string;
+            Reply: string;
+            Audio: string;
+            Domination?: undefined;
+            Script?: undefined;
+        } | {
+            Text: string;
+            Reply: string;
+            Audio: string;
+            Domination: number;
+            Script?: undefined;
+        } | {
+            Text: string;
+            Script: () => void;
+            Reply?: undefined;
+            Audio?: undefined;
+            Domination?: undefined;
+        })[];
+        Background?: undefined;
+        Character?: undefined;
+    } | {
+        Text: string;
+        Audio: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+        }[];
+        Background?: undefined;
+        Answer?: undefined;
+    } | {
+        Text: string;
+        Audio: string;
+        Answer: ({
+            Text: string;
+            Reply: string;
+            Love: number;
+            Audio?: undefined;
+        } | {
+            Text: string;
+            Reply: string;
+            Audio: string;
+            Love: number;
+        })[];
+        Background?: undefined;
+        Character?: undefined;
+    } | {
+        Text: string;
+        Background?: undefined;
+        Character?: undefined;
+        Audio?: undefined;
+        Answer?: undefined;
+    })[];
+} | {
+    Name: string;
+    Music: string;
     Exit: () => void;
     Dialog: ({
         Background: string;
@@ -965,6 +1316,7 @@ declare var PlatformDialogData: ({
     })[];
 } | {
     Name: string;
+    Music: string;
     Exit: () => void;
     Dialog: ({
         Text: string;
@@ -976,6 +1328,7 @@ declare var PlatformDialogData: ({
             X: number;
         }[];
         Answer?: undefined;
+        Audio?: undefined;
     } | {
         Text: string;
         Answer: ({
@@ -989,6 +1342,7 @@ declare var PlatformDialogData: ({
         })[];
         Background?: undefined;
         Character?: undefined;
+        Audio?: undefined;
     } | {
         Text: string;
         Character: {
@@ -998,11 +1352,13 @@ declare var PlatformDialogData: ({
         }[];
         Background?: undefined;
         Answer?: undefined;
+        Audio?: undefined;
     } | {
         Text: string;
         Background?: undefined;
         Character?: undefined;
         Answer?: undefined;
+        Audio?: undefined;
     } | {
         Background: string;
         Character: {
@@ -1012,9 +1368,17 @@ declare var PlatformDialogData: ({
         }[];
         Text: string;
         Answer?: undefined;
+        Audio?: undefined;
+    } | {
+        Text: string;
+        Audio: string;
+        Background?: undefined;
+        Character?: undefined;
+        Answer?: undefined;
     })[];
 } | {
     Name: string;
+    Music: string;
     Exit: () => void;
     Dialog: ({
         Text: string;
@@ -1103,6 +1467,7 @@ declare var PlatformDialogData: ({
     })[];
 } | {
     Name: string;
+    Music: string;
     Exit: () => void;
     Dialog: ({
         Text: string;
@@ -1185,6 +1550,7 @@ declare var PlatformDialogData: ({
     })[];
 } | {
     Name: string;
+    Music: string;
     Dialog: ({
         Background: string;
         Character: {
@@ -1287,6 +1653,7 @@ declare var PlatformDialogData: ({
     Exit?: undefined;
 } | {
     Name: string;
+    Music: string;
     Dialog: ({
         Background: string;
         Character: {
@@ -1343,6 +1710,7 @@ declare var PlatformDialogData: ({
     Exit?: undefined;
 } | {
     Name: string;
+    Music: string;
     Dialog: ({
         Text: string;
         Background: string;
@@ -1428,6 +1796,7 @@ declare var PlatformDialogData: ({
     Exit?: undefined;
 } | {
     Name: string;
+    Music: string;
     Dialog: ({
         Background: string;
         Character: {
@@ -1475,6 +1844,7 @@ declare var PlatformDialogData: ({
     Exit?: undefined;
 } | {
     Name: string;
+    Music: string;
     Exit: () => void;
     Dialog: ({
         Background: string;
@@ -1595,6 +1965,7 @@ declare var PlatformDialogData: ({
     })[];
 } | {
     Name: string;
+    Music: string;
     Exit: () => void;
     Dialog: ({
         Background: string;
@@ -1694,6 +2065,7 @@ declare var PlatformDialogData: ({
     })[];
 } | {
     Name: string;
+    Music: string;
     Exit: () => void;
     Dialog: ({
         Background: string;
@@ -1702,6 +2074,7 @@ declare var PlatformDialogData: ({
         Text?: undefined;
         Answer?: undefined;
         ID?: undefined;
+        Prerequisite?: undefined;
     } | {
         Character: {
             Name: string;
@@ -1713,6 +2086,7 @@ declare var PlatformDialogData: ({
         Text?: undefined;
         Answer?: undefined;
         ID?: undefined;
+        Prerequisite?: undefined;
     } | {
         Text: string;
         Background?: undefined;
@@ -1720,6 +2094,7 @@ declare var PlatformDialogData: ({
         Character?: undefined;
         Answer?: undefined;
         ID?: undefined;
+        Prerequisite?: undefined;
     } | {
         Character: {
             Name: string;
@@ -1731,6 +2106,7 @@ declare var PlatformDialogData: ({
         Entry?: undefined;
         Answer?: undefined;
         ID?: undefined;
+        Prerequisite?: undefined;
     } | {
         Text: string;
         Answer: ({
@@ -1756,6 +2132,7 @@ declare var PlatformDialogData: ({
         Entry?: undefined;
         Character?: undefined;
         ID?: undefined;
+        Prerequisite?: undefined;
     } | {
         Text: string;
         Answer: ({
@@ -1778,8 +2155,10 @@ declare var PlatformDialogData: ({
         Entry?: undefined;
         Character?: undefined;
         ID?: undefined;
+        Prerequisite?: undefined;
     } | {
         ID: string;
+        Prerequisite: () => boolean;
         Character: {
             Name: string;
             Status: string;
@@ -1789,9 +2168,35 @@ declare var PlatformDialogData: ({
         Background?: undefined;
         Entry?: undefined;
         Answer?: undefined;
+    } | {
+        Prerequisite: () => boolean;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+        }[];
+        Text: string;
+        Background?: undefined;
+        Entry?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        Prerequisite: () => boolean;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+            X: number;
+        }[];
+        Text: string;
+        Background?: undefined;
+        Entry?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
     })[];
 } | {
     Name: string;
+    Music: string;
     Exit: () => void;
     Dialog: ({
         Background: string;
@@ -1867,6 +2272,7 @@ declare var PlatformDialogData: ({
     })[];
 } | {
     Name: string;
+    Music: string;
     Exit: () => void;
     Dialog: ({
         Background: string;
@@ -1927,6 +2333,7 @@ declare var PlatformDialogData: ({
     })[];
 } | {
     Name: string;
+    Music: string;
     Dialog: ({
         Background: string;
         Character: {
@@ -2014,6 +2421,7 @@ declare var PlatformDialogData: ({
     Exit?: undefined;
 } | {
     Name: string;
+    Music: string;
     Dialog: ({
         Background: string;
         Character: {
@@ -2064,6 +2472,7 @@ declare var PlatformDialogData: ({
     Exit?: undefined;
 } | {
     Name: string;
+    Music: string;
     Exit: () => void;
     Dialog: ({
         Text: string;
@@ -2144,6 +2553,7 @@ declare var PlatformDialogData: ({
     })[];
 } | {
     Name: string;
+    Music: string;
     Dialog: ({
         Background: string;
         Character: {
@@ -2162,6 +2572,7 @@ declare var PlatformDialogData: ({
     Exit?: undefined;
 } | {
     Name: string;
+    Music: string;
     Dialog: ({
         Background: string;
         Character: {
@@ -2347,6 +2758,7 @@ declare var PlatformDialogData: ({
     Exit?: undefined;
 } | {
     Name: string;
+    Music: string;
     Exit: () => void;
     Dialog: ({
         Text: string;
@@ -2583,7 +2995,87 @@ declare var PlatformDialogData: ({
     })[];
 } | {
     Name: string;
-    Exit: () => void;
+    Music: string;
+    Dialog: ({
+        Background: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+        }[];
+        Text?: undefined;
+        Answer?: undefined;
+        Entry?: undefined;
+    } | {
+        Text: string;
+        Background?: undefined;
+        Character?: undefined;
+        Answer?: undefined;
+        Entry?: undefined;
+    } | {
+        Text: string;
+        Answer: ({
+            Text: string;
+            Script: () => void;
+            Reply?: undefined;
+        } | {
+            Text: string;
+            Reply: string;
+            Script?: undefined;
+        })[];
+        Background?: undefined;
+        Character?: undefined;
+        Entry?: undefined;
+    } | {
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+        }[];
+        Background?: undefined;
+        Text?: undefined;
+        Answer?: undefined;
+        Entry?: undefined;
+    } | {
+        Entry: () => void;
+        Text: string;
+        Background?: undefined;
+        Character?: undefined;
+        Answer?: undefined;
+    })[];
+    Exit?: undefined;
+} | {
+    Name: string;
+    Music: string;
+    Dialog: ({
+        Background: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Animation: string;
+            X: number;
+            Y: number;
+        }[];
+        Text?: undefined;
+    } | {
+        Text: string;
+        Background?: undefined;
+        Character?: undefined;
+    } | {
+        Background: string;
+        Text: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Animation: string;
+            X: number;
+            Y: number;
+        }[];
+    })[];
+    Exit?: undefined;
+} | {
+    Name: string;
+    Music: string;
     Dialog: ({
         Background: string;
         Character: {
@@ -2600,29 +3092,191 @@ declare var PlatformDialogData: ({
         Answer?: undefined;
     } | {
         Text: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+            X: number;
+        }[];
+        Background?: undefined;
+        Answer?: undefined;
+    } | {
+        Text: string;
         Answer: ({
             Text: string;
-            Script: () => void;
-            Reply?: undefined;
+            Reply: string;
+            Love: number;
+            Domination?: undefined;
         } | {
             Text: string;
             Reply: string;
-            Script?: undefined;
+            Domination: number;
+            Love?: undefined;
+        })[];
+        Background?: undefined;
+        Character?: undefined;
+    })[];
+    Exit?: undefined;
+} | {
+    Name: string;
+    Music: string;
+    Dialog: ({
+        Background: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Animation: string;
+            Y: number;
+        }[];
+        Text?: undefined;
+        Answer?: undefined;
+    } | {
+        Text: string;
+        Background?: undefined;
+        Character?: undefined;
+        Answer?: undefined;
+    } | {
+        Text: string;
+        Background: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+            X: number;
+        }[];
+        Answer?: undefined;
+    } | {
+        Text: string;
+        Answer: ({
+            Text: string;
+            Reply: string;
+            Domination: number;
+            Love?: undefined;
+        } | {
+            Text: string;
+            Reply: string;
+            Love: number;
+            Domination?: undefined;
         })[];
         Background?: undefined;
         Character?: undefined;
     } | {
+        Text: string;
+        Answer: {
+            Text: string;
+            Reply: string;
+        }[];
+        Background?: undefined;
+        Character?: undefined;
+    })[];
+    Exit?: undefined;
+} | {
+    Name: string;
+    Music: string;
+    Exit: () => void;
+    Dialog: ({
+        Background: string;
+        Entry: () => void;
+        Prerequisite?: undefined;
+        Text?: undefined;
+        Character?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        Prerequisite: () => boolean;
+        Text: string;
         Character: {
             Name: string;
             Status: string;
             Pose: string;
         }[];
         Background?: undefined;
-        Text?: undefined;
+        Entry?: undefined;
         Answer?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Answer: ({
+            Text: string;
+            Reply: string;
+            Domination?: undefined;
+            Perk?: undefined;
+        } | {
+            Text: string;
+            Reply: string;
+            Domination: number;
+            Perk?: undefined;
+        } | {
+            Text: string;
+            Reply: string;
+            Perk: boolean;
+            Domination: number;
+        })[];
+        Background?: undefined;
+        Entry?: undefined;
+        Prerequisite?: undefined;
+        Character?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Background?: undefined;
+        Entry?: undefined;
+        Prerequisite?: undefined;
+        Character?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Answer: ({
+            Text: string;
+            Reply: string;
+            Love: number;
+            Perk?: undefined;
+        } | {
+            Text: string;
+            Reply: string;
+            Love?: undefined;
+            Perk?: undefined;
+        } | {
+            Text: string;
+            Reply: string;
+            Perk: boolean;
+            Love: number;
+        })[];
+        Background?: undefined;
+        Entry?: undefined;
+        Prerequisite?: undefined;
+        Character?: undefined;
+        ID?: undefined;
+    } | {
+        ID: string;
+        Prerequisite: () => boolean;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+        }[];
+        Text: string;
+        Background?: undefined;
+        Entry?: undefined;
+        Answer?: undefined;
+    } | {
+        Prerequisite: () => boolean;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+            X: number;
+        }[];
+        Text: string;
+        Background?: undefined;
+        Entry?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
     })[];
 } | {
     Name: string;
+    Music: string;
     Dialog: ({
         Entry: () => void;
         Character: {
@@ -2765,6 +3419,7 @@ declare var PlatformDialogData: ({
     Exit?: undefined;
 } | {
     Name: string;
+    Music: string;
     Dialog: ({
         Entry: () => void;
         Character: {
@@ -2820,6 +3475,492 @@ declare var PlatformDialogData: ({
         Text?: undefined;
         Answer?: undefined;
         Prerequisite?: undefined;
+    })[];
+    Exit?: undefined;
+} | {
+    Name: string;
+    Music: string;
+    Dialog: ({
+        Entry: () => void;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+            X: number;
+        }[];
+        Prerequisite?: undefined;
+        Text?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        Prerequisite: () => boolean;
+        Text: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+            X: number;
+        }[];
+        Entry?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+            X: number;
+        }[];
+        Entry?: undefined;
+        Prerequisite?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Entry?: undefined;
+        Character?: undefined;
+        Prerequisite?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Answer: ({
+            Text: string;
+            Reply: string;
+            Domination?: undefined;
+            Goto?: undefined;
+            Perk?: undefined;
+        } | {
+            Text: string;
+            Reply: string;
+            Domination: number;
+            Goto: string;
+            Perk?: undefined;
+        } | {
+            Text: string;
+            Reply: string;
+            Perk: boolean;
+            Goto: string;
+            Domination?: undefined;
+        })[];
+        Entry?: undefined;
+        Character?: undefined;
+        Prerequisite?: undefined;
+        ID?: undefined;
+    } | {
+        Entry: () => void;
+        Text: string;
+        Character?: undefined;
+        Prerequisite?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Answer: ({
+            Text: string;
+            Reply: string;
+            Domination: number;
+        } | {
+            Text: string;
+            Reply: string;
+            Domination?: undefined;
+        })[];
+        Entry?: undefined;
+        Character?: undefined;
+        Prerequisite?: undefined;
+        ID?: undefined;
+    } | {
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+            X: number;
+        }[];
+        Entry?: undefined;
+        Prerequisite?: undefined;
+        Text?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        Prerequisite: () => boolean;
+        Text: string;
+        Entry?: undefined;
+        Character?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        ID: string;
+        Entry: () => void;
+        Character?: undefined;
+        Prerequisite?: undefined;
+        Text?: undefined;
+        Answer?: undefined;
+    })[];
+    Exit?: undefined;
+} | {
+    Name: string;
+    Music: string;
+    Dialog: ({
+        Entry: () => void;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+            X: number;
+        }[];
+        Text?: undefined;
+        Answer?: undefined;
+        Prerequisite?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Entry?: undefined;
+        Character?: undefined;
+        Answer?: undefined;
+        Prerequisite?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Answer: ({
+            Text: string;
+            Reply: string;
+            Script: () => void;
+            Goto?: undefined;
+        } | {
+            Text: string;
+            Reply: string;
+            Goto: string;
+            Script?: undefined;
+        })[];
+        Entry?: undefined;
+        Character?: undefined;
+        Prerequisite?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+            X: number;
+        }[];
+        Entry?: undefined;
+        Answer?: undefined;
+        Prerequisite?: undefined;
+        ID?: undefined;
+    } | {
+        Prerequisite: () => boolean;
+        Text: string;
+        Entry?: undefined;
+        Character?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        ID: string;
+        Entry: () => void;
+        Character?: undefined;
+        Text?: undefined;
+        Answer?: undefined;
+        Prerequisite?: undefined;
+    })[];
+    Exit?: undefined;
+} | {
+    Name: string;
+    Music: string;
+    Dialog: ({
+        Entry: () => void;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+            X: number;
+        }[];
+        Prerequisite?: undefined;
+        Text?: undefined;
+        Answer?: undefined;
+        Background?: undefined;
+        ID?: undefined;
+    } | {
+        Prerequisite: () => boolean;
+        Text: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+            X: number;
+        }[];
+        Entry?: undefined;
+        Answer?: undefined;
+        Background?: undefined;
+        ID?: undefined;
+    } | {
+        Prerequisite: () => boolean;
+        Text: string;
+        Entry?: undefined;
+        Character?: undefined;
+        Answer?: undefined;
+        Background?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Answer: ({
+            Text: string;
+            Reply: string;
+            Love?: undefined;
+            Goto?: undefined;
+            Perk?: undefined;
+        } | {
+            Text: string;
+            Reply: string;
+            Love: number;
+            Goto: string;
+            Perk?: undefined;
+        } | {
+            Text: string;
+            Reply: string;
+            Perk: boolean;
+            Goto: string;
+            Love?: undefined;
+        })[];
+        Entry?: undefined;
+        Character?: undefined;
+        Prerequisite?: undefined;
+        Background?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+        }[];
+        Entry?: undefined;
+        Prerequisite?: undefined;
+        Answer?: undefined;
+        Background?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Entry?: undefined;
+        Character?: undefined;
+        Prerequisite?: undefined;
+        Answer?: undefined;
+        Background?: undefined;
+        ID?: undefined;
+    } | {
+        Entry: () => void;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+        }[];
+        Prerequisite?: undefined;
+        Text?: undefined;
+        Answer?: undefined;
+        Background?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Answer: ({
+            Text: string;
+            Reply: string;
+            Domination: number;
+            Love: number;
+            Goto?: undefined;
+        } | {
+            Text: string;
+            Reply: string;
+            Domination: number;
+            Goto: string;
+            Love?: undefined;
+        })[];
+        Entry?: undefined;
+        Character?: undefined;
+        Prerequisite?: undefined;
+        Background?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Background: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+            X: number;
+        }[];
+        Entry?: undefined;
+        Prerequisite?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        Entry?: undefined;
+        Character?: undefined;
+        Prerequisite?: undefined;
+        Text?: undefined;
+        Answer?: undefined;
+        Background?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+            X: number;
+        }[];
+        Entry?: undefined;
+        Prerequisite?: undefined;
+        Answer?: undefined;
+        Background?: undefined;
+        ID?: undefined;
+    } | {
+        ID: string;
+        Text: string;
+        Entry?: undefined;
+        Character?: undefined;
+        Prerequisite?: undefined;
+        Answer?: undefined;
+        Background?: undefined;
+    } | {
+        ID: string;
+        Entry: () => void;
+        Character?: undefined;
+        Prerequisite?: undefined;
+        Text?: undefined;
+        Answer?: undefined;
+        Background?: undefined;
+    })[];
+    Exit?: undefined;
+} | {
+    Name: string;
+    Music: string;
+    Dialog: ({
+        Entry: () => void;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+            X: number;
+        }[];
+        Prerequisite?: undefined;
+        Text?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        Prerequisite: () => boolean;
+        Text: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+            X: number;
+        }[];
+        Entry?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+            X: number;
+        }[];
+        Entry?: undefined;
+        Prerequisite?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Entry?: undefined;
+        Character?: undefined;
+        Prerequisite?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Answer: ({
+            Text: string;
+            Reply: string;
+            Domination?: undefined;
+            Goto?: undefined;
+            Perk?: undefined;
+        } | {
+            Text: string;
+            Reply: string;
+            Domination: number;
+            Goto: string;
+            Perk?: undefined;
+        } | {
+            Text: string;
+            Reply: string;
+            Perk: boolean;
+            Goto: string;
+            Domination?: undefined;
+        })[];
+        Entry?: undefined;
+        Character?: undefined;
+        Prerequisite?: undefined;
+        ID?: undefined;
+    } | {
+        Entry: () => void;
+        Text: string;
+        Character?: undefined;
+        Prerequisite?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        Prerequisite: () => boolean;
+        Text: string;
+        Entry?: undefined;
+        Character?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Answer: ({
+            Text: string;
+            Reply: string;
+            Domination: number;
+        } | {
+            Text: string;
+            Reply: string;
+            Domination?: undefined;
+        })[];
+        Entry?: undefined;
+        Character?: undefined;
+        Prerequisite?: undefined;
+        ID?: undefined;
+    } | {
+        Text: string;
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+        }[];
+        Entry?: undefined;
+        Prerequisite?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        Character: {
+            Name: string;
+            Status: string;
+            Pose: string;
+        }[];
+        Entry?: undefined;
+        Prerequisite?: undefined;
+        Text?: undefined;
+        Answer?: undefined;
+        ID?: undefined;
+    } | {
+        ID: string;
+        Entry: () => void;
+        Character?: undefined;
+        Prerequisite?: undefined;
+        Text?: undefined;
+        Answer?: undefined;
     })[];
     Exit?: undefined;
 })[];

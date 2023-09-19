@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MBS_dev - Maid's Bondage Scripts Development Version
 // @namespace    MBS_dev
-// @version      0.6.7.dev0
+// @version      0.6.19.dev0
 // @description  Loader of Bananarama92's "Maid's Bondage Scripts" mod (dev version)
 // @author       Bananarama92
 // @match        http://localhost:*/*
@@ -19,7 +19,7 @@ setTimeout(
         const n = document.createElement("script");
         n.language = "JavaScript";
         n.crossorigin = "anonymous";
-        n.src = "https://bananarama92.github.io/MBS/devel/mbs.js";
+        n.src = `https://bananarama92.github.io/MBS/devel/mbs.js?_=${Date.now()}`;
         document.head.appendChild(n);
     },
     2000,

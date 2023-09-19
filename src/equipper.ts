@@ -270,6 +270,15 @@ function blockedByEnclose(character: Character): boolean {
     return (item == null) ? false : !canUnlock(item, character);
 }
 
+function skillGetWithRatio(character: Character, skillType: SkillType): number {
+    if (GameVersion === "R95") {
+        // @ts-expect-error
+        return SkillGetWithRatio(skillType);
+    } else {
+        return SkillGetWithRatio(character, skillType);
+    }
+}
+
 /**
  * Equip the character with all items from the passed fortune wheel item list.
  * @param name The name of the wheel of fortune item list
@@ -314,7 +323,7 @@ export function fortuneWheelEquip(
     keyCache.clear();
     const equipFailureRecord: Record<string, string[]> = {};
     const equipCallbackOutputs: Set<AssetGroupName> = new Set();
-    const isClubSlave = LogQuery("ClubSlave", "Management");
+    const isClubSlave = character.IsPlayer() && LogQuery("ClubSlave", "Management");
     for (const {Name, Group, Equip, NoEquip} of <(FWItem & { NoEquip?: boolean })[]>[...blockingItems, ...itemList]) {
         const asset = AssetGet(character.AssetFamily, Group, Name);
         const oldItem = InventoryGet(character, Group);
@@ -329,7 +338,8 @@ export function fortuneWheelEquip(
             continue;
         } else {
             const equipChecks: Record<string, boolean> = {
-                "InventoryGroupIsBlocked": InventoryGroupIsBlocked(character, <AssetGroupItemName>Group, false),
+                "InventoryGroupIsBlockedForCharacter": InventoryGroupIsBlockedForCharacter(character, <AssetGroupItemName>Group, false),
+                "InventoryGroupIsBlockedByOwnerRule": InventoryGroupIsBlockedByOwnerRule(character, Group),
                 "Locked item equipped": oldItem == null ? false : !canUnlock(oldItem, character),
             };
             if (!NoEquip) {
@@ -362,8 +372,8 @@ export function fortuneWheelEquip(
         const color = Color ?? asset.DefaultColor;
         const colorCopy = isArray(color) ? [...color] : color;
         CharacterAppearanceSetItem(
-            character, Group, asset, colorCopy,
-            SkillGetWithRatio("Bondage"), character.MemberNumber, false,
+            character, Group, asset, colorCopy, skillGetWithRatio(character, "Bondage"),
+            character.MemberNumber, false,
         );
         const newItem = InventoryGet(character, Group);
         if (newItem == null) {

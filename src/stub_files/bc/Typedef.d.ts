@@ -115,6 +115,8 @@ type DialogStruggleActionType = "ActionUse" | "ActionSwap" | "ActionRemove" | "A
 
 type CharacterType = "online" | "npc" | "simple";
 
+type CharacterPronouns = "SheHer" | "HeHim";
+
 type VibratorIntensity = -1 | 0 | 1 | 2 | 3;
 
 type VibratorModeState = "Default" | "Deny" | "Orgasm" | "Rest";
@@ -124,6 +126,32 @@ type VibratorMode = "Off" | "Low" | "Medium" | "High" | "Maximum" | "Random" | "
 type VibratorRemoteAvailability = "Available" | "NoRemote" | "NoRemoteOwnerRuleActive" | "NoLoversRemote" | "RemotesBlocked" | "CannotInteract" | "NoAccess" | "InvalidItem";
 
 type ItemVulvaFuturisticVibratorAccessMode = "" | "ProhibitSelf" | "LockMember";
+
+/** The {@link EffectName} values for all gag-related effects. */
+type GagEffectName = (
+	"GagVeryLight"
+	| "GagEasy"
+	| "GagLight"
+	| "GagNormal"
+	| "GagMedium"
+	| "GagHeavy"
+	| "GagVeryHeavy"
+	| "GagTotal"
+
+	// Those are only supposed to be "transient", as in, they appear because of stacked gags
+	| "GagTotal2"
+	| "GagTotal3"
+	| "GagTotal4"
+);
+
+/** The {@link EffectName} values for all blindness-related effects. */
+type BlindEffectName = "BlindLight" | "BlindNormal" | "BlindHeavy" | "BlindTotal";
+
+/** The {@link EffectName} values for all blurring-related effects. */
+type BlurEffectName = "BlurLight" | "BlurNormal" | "BlurHeavy" | "BlurTotal";
+
+/** The {@link EffectName} values for all deafness-related effects. */
+type DeafEffectName = "DeafLight" | "DeafNormal" | "DeafHeavy" | "DeafTotal";
 
 /**
  * @property Freeze - Prevents walking and kneeling unaided. There's a few caveats with the kneeling part.
@@ -212,6 +240,8 @@ type ItemVulvaFuturisticVibratorAccessMode = "" | "ProhibitSelf" | "LockMember";
  *   triggering arousal. Used as part of the stimulation event system.
  */
 type EffectName =
+	GagEffectName | BlindEffectName | BlurEffectName | DeafEffectName |
+
 	"Freeze" | "Prone" | "Block" | "Mounted" | "KneelFreeze" | "ForceKneel" | "BlockKneel" |
 
 	"CuffedFeet" | "CuffedLegs" | "CuffedArms" | "IsChained" | "FixedHead" | "MergedFingers" |
@@ -237,15 +267,6 @@ type EffectName =
 	"OpenPermission" | "OpenPermissionArm" | "OpenPermissionLeg" | "OpenPermissionChastity" |
 
 	"BlockMouth" | "OpenMouth" |
-
-	"GagVeryLight" | "GagEasy" | "GagLight" | "GagNormal" | "GagMedium" | "GagHeavy" | "GagVeryHeavy" | "GagTotal" |
-
-	// Those are only supposed to be "transient", as in, they appear because of stacked gags
-	"GagTotal2" | "GagTotal3" | "GagTotal4" |
-
-	"BlindLight" | "BlindNormal" | "BlindHeavy" | "BlindTotal" |
-	"BlurLight" | "BlurNormal" | "BlurHeavy" | "BlurTotal" |
-	"DeafLight" | "DeafNormal" | "DeafHeavy" | "DeafTotal" |
 
 	"VR" | "VRAvatars" | "KinkyDungeonParty" |
 
@@ -315,7 +336,7 @@ type AssetGroupScriptName = 'ItemScript';
 
 type AssetGroupBodyName =
 	ExpressionGroupName | 'BodyLower' | 'BodyUpper' | 'Bra' | 'Bracelet' | 'Cloth' |
-	'ClothAccessory' | 'ClothLower' | 'Corset' | 'FacialHair' | 'Garters' | 'Glasses' | 'Gloves' |
+	'ClothAccessory' | 'ClothLower' | 'Corset' | 'EyeShadow' | 'FacialHair' | 'Garters' | 'Glasses' | 'Gloves' |
 	'HairAccessory1' | 'HairAccessory2' | 'HairAccessory3' | 'HairBack' |
 	'HairFront' | 'FacialHair' | 'Hands' | 'Hat' | 'Head' | 'Height' | 'Jewelry' | 'LeftAnklet' | 'LeftHand' | 'Mask' |
 	'Necklace' | 'Nipples' | 'Panties' | 'Pronouns' | 'RightAnklet' | 'RightHand' |
@@ -355,7 +376,7 @@ type AssetAttribute =
 	"Skirt" | "SuitLower" | "UpperLarge" |
 	"ShortHair" | "SmallEars" | "NoEars" | "NoseRing" | "HoodieFix" |
 	"CanAttachMittens" |
-	"PenisLayer" | "PussyLayer" | "GenitaliaCover" | "PussyLight1" | "PussyLight2" | "PussyLight3" | "PussyDark1" | "PussyDark2" | "PussyDark3" |
+	"PenisLayer" | "PussyLayer" | "GenitaliaCover" | "Pussy1" | "Pussy2" | "Pussy3" |
 	"CagePlastic2" | "CageTechno" | "CageFlat" |
 	"FuturisticRecolor" | "FuturisticRecolorDisplay" |
 	"PortalLinkLockable" | `PortalLinkChastity${string}` | `PortalLinkActivity${ActivityName}` | `PortalLinkTarget${AssetGroupItemName}`
@@ -439,6 +460,9 @@ type AssetCategory = "Medical" | "Extreme" | "Pony" | "SciFi" | "ABDL" | "Fantas
 type PortalLinkStatus = "PortalLinkInvalidCode" | "PortalLinkClipboardError" | "PortalLinkValidCode" | `PortalLinkSearching${number}` | "PortalLinkDuplicateCode" | "PortalLinkTargetNotFound" | "PortalLinkEstablished";
 type PortalLinkFunction = "PortalLinkFunctionLock" | "PortalLinkFunctionUnlock" | "PortalLinkFunctionCycleChastity" | `PortalLinkFunctionActivity${ActivityName}`;
 
+/** Valid thumb icons for range slider elements */
+type ThumbIcon = "lock" | "blindfold" | "lightbulb" | "player" | "rope";
+
 //#endregion
 
 //#region Server Messages
@@ -451,7 +475,7 @@ interface IChatRoomGameResponse {
 			target: number,
 		};
 		/* LARP */
-		GameProgress?: "Start" | "Stop" | "Next" | "Skip" | "Action";
+		GameProgress?: "Start" | "Stop" | "Next" | "Skip" | "Action" | "Query";
 		Action?: undefined;
 		Target?: number;
 		Item?: string;
@@ -459,6 +483,12 @@ interface IChatRoomGameResponse {
 		/* MagicBattle */
 		Spell?: number;
 		Time?: number; /* ms */
+
+		/* Club Card */
+		Player1?: number;
+		Player2?: number;
+		CCData: [any];
+		CCLog: string;
 	}
 	Sender: number;
 	RNG: number
@@ -495,7 +525,7 @@ interface IChatRoomSyncArousalMessage {
 type ChatRoomLovershipOption = "" | "CanOfferBeginWedding" | "CanBeginWedding";
 type ChatRoomOwnershipOption = "" | "CanOfferEndTrial" | "CanOfferTrial" | "CanEndTrial";
 type ChatRoomSpaceType = "X" | "" | "M" | "Asylum";
-type ChatRoomGame = "" | "LARP" | "MagicBattle" | "GGTS";
+type ChatRoomGame = "" | "ClubCard" | "LARP" | "MagicBattle" | "GGTS";
 type ChatRoomBlockCategory = AssetCategory | "Leashing" | "Photos" | "Arousal";
 type ChatRoomLanguage = "EN" | "DE" | "FR" | "ES" | "CN" | "RU";
 
@@ -701,6 +731,8 @@ interface GroupReferenceDictionaryEntry extends TaggedDictionaryEntry {
 interface AssetReferenceDictionaryEntry extends GroupReferenceDictionaryEntry {
 	/** The name of the asset being referenced */
 	AssetName: string;
+	/** The (optional) {@link CraftingItem.Name} in case the asset was referenced via a crafted item */
+	CraftName?: string;
 }
 
 /**
@@ -813,8 +845,10 @@ interface IChatRoomMessageMetadata {
 	GroupName?: AssetGroupName;
 	/** The assets referenced in the message */
 	Assets?: Record<string, Asset>;
+	/** The {@link CraftingItem.Name} of the assets referenced in the message (if applicable) */
+	CraftingNames?: Record<string, string>;
 	/** The groups referenced in the message */
-	Groups?: Partial<Record<AssetGroupName, AssetGroup>>;
+	Groups?: Partial<Record<AssetGroupName, AssetGroup[]>>;
 	/** How intense the shock should be */
 	ShockIntensity?: number;
 	ActivityCounter?: number;
@@ -952,7 +986,7 @@ interface AssetGroup {
 	SetPose?: readonly AssetPoseName[];
 	AllowPose: readonly AssetPoseName[];
 	AllowExpression?: readonly ExpressionName[];
-	Effect?: readonly EffectName[];
+	Effect: readonly EffectName[];
 	MirrorGroup: AssetGroupName | "";
 	RemoveItemOnRemove: readonly { Group: AssetGroupItemName; Name: string; Type?: string }[];
 	DrawingPriority: number;
@@ -964,7 +998,9 @@ interface AssetGroup {
 	FreezeActivePose: readonly AssetPoseCategory[];
 	PreviewZone?: RectTuple;
 	DynamicGroupName: AssetGroupName;
+
 	MirrorActivitiesFrom?: AssetGroupItemName;
+	ArousalZone?: AssetGroupItemName;
 
 	/** A dict mapping colors to custom filename suffices.
 	The "HEX_COLOR" key is special-cased to apply to all color hex codes. */
@@ -1079,6 +1115,7 @@ interface AssetLayer {
 	ShowForAttribute: readonly AssetAttribute[] | null;
 	/** Used along with a hook to make layers of an asset disappear in some cases. */
 	Visibility: "Player" | "AllExceptPlayerDialog" | "Others" | "OthersExceptDialog" | "Owner" | "Lovers" | "Mistresses" | null;
+	ColorSuffix: Record<string, string> | null;
 }
 
 /** An object defining a group of alpha masks to be applied when drawing an asset layer */
@@ -1144,7 +1181,7 @@ interface Asset {
 	AllowActivityOn?: readonly AssetGroupItemName[];
 	BuyGroup?: string;
 	PrerequisiteBuyGroups?: readonly string[];
-	Effect?: readonly EffectName[];
+	Effect: readonly EffectName[];
 	Bonus?: AssetBonusName;
 	Block?: readonly AssetGroupItemName[];
 	Expose: readonly AssetGroupItemName[];
@@ -1355,6 +1392,8 @@ interface Skill {
 	Level: number;
 	Progress: number;
 	Ratio?: number;
+	ModifierLevel?: number;
+	ModifierTimeout?: number;
 }
 
 type ReputationType =
@@ -1452,11 +1491,21 @@ interface DialogLine {
 	Trait: string;
 }
 
+interface DialogInfo {
+	module: ModuleType;
+	screen: string;
+	name: string;
+}
+
 interface Character {
 	ID: number;
 	/** Only on `Player` */
 	OnlineID?: string;
 	Type: CharacterType;
+	/**
+	 * The character's loaded dialog info
+	 */
+	DialogInfo?: DialogInfo;
 	Name: string;
 	Nickname?: string;
 	AssetFamily: IAssetFamily;
@@ -1577,7 +1626,8 @@ interface Character {
 	UnregisterHook: (hookName: CharacterHook, hookInstance: string) => boolean;
 	RunHooks: (hookName: CharacterHook) => void;
 	HeightRatioProportion?: number;
-	GetGenders: () => ("M" | "F")[];
+	GetGenders: () => ("F" | "M")[];
+	GetPronouns: () => CharacterPronouns;
 	HasPenis: () => boolean;
 	HasVagina: () => boolean;
 	IsFlatChested: () => boolean;
@@ -1600,7 +1650,7 @@ interface Character {
 	BlackList: number[];
 	RunScripts?: boolean;
 	HasScriptedAssets?: boolean;
-	Cage?: true | null;
+	Cage?: boolean;
 	Difficulty?: {
 		Level: number;
 		LastChange?: number;
@@ -1955,18 +2005,24 @@ interface NPCTrait {
 interface ElementMetaData {
 	/** Whether to draw an element-accompanying image or not */
 	drawImage?: boolean,
+	/**
+	 * The static image path of the to-be drawn image.
+	 * A value of `null` either implies that it should not be drawn (per {@link ElementMetaData.drawImage})
+	 * or that it's a dynamic image path (_e.g._ modular item modules).
+	 */
+	imagePath?: null | string,
 	/** The name of a supported thumbnail image in \CSS\Styles.css that will show the current position on the slider */
-	icon?: string,
+	icon?: ThumbIcon,
 	/** Whether an options shows up in the UI. Useful for options that are managed programmatically. */
 	hidden?: boolean,
 }
 
 declare namespace ElementMetaData {
-	interface Typed { drawImage: boolean, hidden: boolean }
-	interface Modular { drawImage: boolean, hidden: boolean }
-	interface Vibrating  { drawImage: false, hidden: false }
+	interface Typed { drawImage: boolean, hidden: boolean, imagePath: null | string }
+	interface Modular { drawImage: boolean, hidden: boolean, imagePath: null | string }
+	interface Vibrating  { drawImage: false, hidden: false, imagePath: null }
 	interface Text {}
-	interface VariableHeight { icon: string }
+	interface VariableHeight { icon: ThumbIcon }
 }
 
 /** @see {@link ElementData} */
@@ -1995,7 +2051,7 @@ interface ExtendedItemConfigDrawData<MetaData extends ElementMetaData> {
 
 /** @see {@link ExtendedItemDrawData} */
 interface VariableHeightConfigDrawData extends ExtendedItemConfigDrawData<{}> {
-	elementData: { position: RectTuple, icon: string }[],
+	elementData: { position: RectTuple, icon: ThumbIcon }[],
 }
 
 /**
@@ -2138,11 +2194,13 @@ declare namespace ExtendedItemCallbacks {
 	 * @param item The item in question
 	 * @param newOption The newly selected extended item option
 	 * @param previousOption The previusly selected extended item option
+	 * @param permitExisting - Determines whether the validation should allow the new option and previous option
+	 * to be identical. Defaults to false.
 	 * @returns A non-empty message string if the item failed validation, or an empty string otherwise
 	 */
 	type Validate<
 		OptionType extends ExtendedItemOption
-	> = ExtendedItemCallback<[C: Character, item: Item, newOption: OptionType, previousOption: OptionType], string>;
+	> = ExtendedItemCallback<[C: Character, item: Item, newOption: OptionType, previousOption: OptionType, permitExisting?: boolean], string>;
 	/**
 	 * Callback for extended item `PublishAction` functions.
 	 * `PublishAction` functions are responsible for reporting any changes to an item's properties via a chat message.
@@ -2251,12 +2309,14 @@ declare namespace ExtendedItemScriptHookCallbacks {
 	 * @param item The item in question
 	 * @param newOption The newly selected extended item option
 	 * @param previousOption The previusly selected extended item option
+	 * @param permitExisting - Determines whether the validation should allow the new option and previous option
+	 * to be identical. Defaults to false.
 	 * @returns A non-empty message string if the item failed validation, or an empty string otherwise
 	 */
 	type Validate<
 		DataType extends ExtendedItemData<any>,
 		OptionType extends ExtendedItemOption
-	> = ExtendedItemScriptHookCallback<DataType, [C: Character, item: Item, newOption: OptionType, previousOption: OptionType], string>;
+	> = ExtendedItemScriptHookCallback<DataType, [C: Character, item: Item, newOption: OptionType, previousOption: OptionType, permitExisting?: boolean], string>;
 	/**
 	 * Callback for extended item `PublishAction` script hooks.
 	 * `PublishAction` functions are responsible for reporting any changes to an item's properties via a chat message.
@@ -2524,10 +2584,30 @@ interface AssetDefinitionProperties {
 
 	/**
 	 * The timer for after how long until a lock should be removed.
-	 * Also used for timed emoticons.
 	 * @see {@link Asset.RemoveTimer}
 	 */
 	RemoveTimer?: number;
+
+	/**
+	 * The timer for an expression change.
+	 */
+	ExpressionTimer?: number;
+
+	/**
+	 * The expression to change to after timer expires.
+	 */
+	NextExpression?: ExpressionName;
+	
+	/**
+	 * Storage for expression reversion.
+	 */
+	StoredExpression?: ExpressionName;
+
+	/** 
+	 * Expression queue array
+	 */
+
+	ExpressionQueue?: ExpressionQueueItem[]
 
 	/**
 	 * The asset's draw opacity
@@ -2549,6 +2629,16 @@ interface AssetDefinitionProperties {
 }
 
 /**
+ * Properties for Expression Queue item
+ */
+
+interface ExpressionQueueItem {
+	Time?: number;
+
+	Expression?: ExpressionName;
+}
+
+/**
  * Base properties for extended items
  *
  * Those are the properties the main game code enforces.
@@ -2559,9 +2649,6 @@ interface ItemPropertiesBase {
 
 	/** A facial expression */
 	Expression?: ExpressionName;
-
-	/** Whether the asset affects should be overriden rather than extended */
-	OverrideAssetEffect?: boolean;
 
 	// Vibratory-related properties
 
@@ -3142,6 +3229,10 @@ interface GamePokerParameters {
 
 interface GameClubCardParameters {
 	Deck: string[];
+	DeckName?: string[];
+	Reward?: string;
+	Status?: OnlineGameStatus;
+	PlayerSlot?: number;
 }
 
 //#endregion
@@ -3420,7 +3511,13 @@ interface PandoraBaseRoom {
 
 //#region Crafting items
 
-type CraftingMode = "Slot" | "Item" | "Property" | "Lock" | "Name" | "Color";
+type CraftingMode = (
+	"Slot" | "Item" | "Property" | "Lock" | "Name" | "Color" | "Extended"
+	| "OverridePriority"
+);
+
+type CraftingReorderType = "None" | "Select" | "Place";
+
 
 /**
  * A struct with an items crafting-related information.
@@ -3450,16 +3547,17 @@ interface CraftingItem {
 	 * @see {@link ItemProperties.Type}
 	 */
 	Type: string | null;
-	/** An integer representing the item layering priority; see {@link ItemProperties.OverridePriority} */
-	OverridePriority: number | null;
+	/**
+	 * An integer (or `null`) representing the item layering priority; see {@link ItemProperties.OverridePriority}.
+	 * @deprecated - superseded by {@link CraftingItem.ItemProperty}
+	 */
+	OverridePriority?: null | number;
 	/**
 	 * A record with a select few (optional) extra item properties:
 	 * * {@link ItemProperties.OverridePriority} in either its record or number form.
 	 * * Properties as specified in {@link ExtendedItemData.baselineProperty}
-	 *
-	 * Requires BC R94Beta1 or later.
 	 */
-	ItemProperty?: ItemProperties | null;
+	ItemProperty: ItemProperties | null;
 }
 
 /**
@@ -3487,8 +3585,15 @@ interface CraftingItemSelected {
 	 * @see {@link ItemProperties.Type}
 	 */
 	Type: string;
-	/** An integer representing the item layering priority; see {@link ItemProperties.OverridePriority} */
-	OverridePriority: number | null;
+	/**
+	 * A record with a select few (optional) extra item properties:
+	 * * {@link ItemProperties.OverridePriority} in either its record or number form.
+	 * * Properties as specified in {@link ExtendedItemData.baselineProperty}
+	 */
+	ItemProperty: ItemProperties;
+	/** Get or set the `OverridePriority` property of {@link CraftingItemSelected.ItemProperty} */
+	get OverridePriority(): null | AssetLayerOverridePriority;
+	set OverridePriority(value: null | AssetLayerOverridePriority);
  }
 
 /**
@@ -3599,6 +3704,9 @@ interface LogNameType {
 	"NPC-Sarah": "SarahLover" | "SarahCollared" | "SarahCollaredWithCurfew",
 	"NPC-SarahIntro": "SarahWillBePunished" | "SarahCameWithPlayer",
 	"NPC-Sidney": "SidneyLover" | "SidneyMistress" | "SidneyCollared" | "SidneyCollaredWithCurfew",
+	"NPC-Julia": "Dominant" | "Submissive",
+	"NPC-Yuki": "Dominant" | "Submissive",
+	"NPC-Mildred": "Dominant" | "Submissive",
 	// NOTE: A number of owner rules can have arbitrary suffices, and can thus not be expressed as string literals
 	OwnerRule: (
 		"BlockChange"
@@ -3773,10 +3881,13 @@ interface ClubCard {
 	Type?: string;
 	Title?: string;
 	Text?: string;
-	Unique?: boolean;
+	Prerequisite?: string;
+	Reward?: string;
+	RewardMemberNumber?: number;
 	MoneyPerTurn?: number;
 	FamePerTurn?: number;
 	RequiredLevel?: number;
+	Time?: number;
 	ExtraTime?: number;
 	ExtraDraw?: number;
 	ExtraPlay?: number;
@@ -3786,6 +3897,7 @@ interface ClubCard {
 	GlowColor?: string;
 	OnPlay?: (C: ClubCardPlayer) => void;
 	OnTurnEnd?: (C: ClubCardPlayer) => void;
+	OnOpponentTurnEnd?: (C: ClubCardPlayer) => void;
 	CanPlay?: (C: ClubCardPlayer) => boolean;
 }
 
@@ -3798,6 +3910,7 @@ interface ClubCardPlayer {
 	FullDeck: ClubCard[];
 	Hand: ClubCard[];
 	Board: ClubCard[];
+	Event: ClubCard[];
 	Level: number;
 	Money: number;
 	Fame: number;

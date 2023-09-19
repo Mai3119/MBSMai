@@ -32,11 +32,22 @@ declare function CraftingItemSupportsAutoType(): boolean;
  */
 declare function CraftingRun(): void;
 /**
+ * Update {@link CraftingSelectedItem.ItemProperties} with a select few properties from the passed item.
+ * @param {Item} item - The item whose properties should be coppied.
+ * @returns {void}
+ */
+declare function CraftingUpdateFromItem(item: Item): void;
+/**
  * Sets the new mode and creates or removes the inputs
  * @param {CraftingMode} NewMode - The new mode to set
  * @returns {void} - Nothing
  */
 declare function CraftingModeSet(NewMode: CraftingMode): void;
+/**
+ * @this {HTMLInputElement}
+ * @returns {void};
+ */
+declare function CraftingPriorityKeyUp(this: HTMLInputElement): void;
 /**
  * When the color or type field is updated manually, we update the preview image
  * @returns {void} - Nothing
@@ -64,6 +75,11 @@ declare function CraftingDecompressServerData(Data: string | any[]): CraftingIte
  * @returns {void} - Nothing
  */
 declare function CraftingLoadServer(Packet: string): void;
+/**
+ * Advance to the next crafting reordering mode, or set the mode to the specified value.
+ * @param {CraftingReorderType} newmode - The mode to set.  If null, advance to next mode.
+ */
+declare function CraftingReorderModeSet(newmode?: CraftingReorderType): void;
 /**
  * Handles clicks in the crafting room.
  * @returns {void} - Nothing
@@ -119,9 +135,10 @@ declare var CraftingBackground: string;
  * * `"Lock"`: The {@link CraftingLockList} selection screen.
  * * `"Name"`: The main menu wherein the crafted item is customized, allowing for the specification of names, descriptions, colors, extended item types, _etc._
  * * `"Color"`: A dedicated coloring screen for the crafted item.
- * @type {"Slot" | "Item" | "Property" | "Lock" | "Name" | "Color"}
+ * * `"Extended"`: The extended item menu.
+ * @type {CraftingMode}
  */
-declare let CraftingMode: "Slot" | "Item" | "Property" | "Lock" | "Name" | "Color";
+declare let CraftingMode: CraftingMode;
 /** Whether selecting a crafted item in the crafting screen should destroy it. */
 declare let CraftingDestroy: boolean;
 /** The index of the selected crafted item within the crafting screen. */
@@ -138,8 +155,6 @@ declare let CraftingOffset: number;
  * @type {Asset[]}
  */
 declare let CraftingItemList: Asset[];
-/** The maximum number of crafting slots. */
-declare let CraftingSlotMax: number;
 /**
  * The character used for the crafting preview.
  * @type {Character | null}
@@ -149,6 +164,18 @@ declare let CraftingPreview: Character | null;
 declare let CraftingNakedPreview: boolean;
 /** Whether exiting the crafting menu should return you to the chatroom or, otherwise, the main hall. */
 declare let CraftingReturnToChatroom: boolean;
+/** Pagination offset used for the `Priority` {@link CraftingMode}. */
+declare let CraftingOverridePriorityOffset: number;
+/** List of item indices collected for swapping.
+ * @type {number[]}
+ */
+declare let CraftingReorderList: number[];
+/** @type {CraftingReorderType} */
+declare let CraftingReorderMode: CraftingReorderType;
+/**
+ * @type {null | TextCache}
+ */
+declare let CraftingLayerNames: null | TextCache;
 /**
  * Map crafting properties to their respective validation function.
  * @type {Map<CraftingPropertyType, (asset: Asset) => boolean>}
@@ -173,9 +200,14 @@ declare const CraftingStatusType: {
  */
 declare const CraftingLockList: readonly (AssetLockType | "")[];
 /**
+ * A set of item property names that should never be stored in {@link CraftingItem.ItemProperty}.
+ * @type {Set<keyof ItemProperties>}
+ */
+declare const CraftingPropertyExclude: Set<keyof ItemProperties>;
+/**
  * A record with tools for validating {@link CraftingItem} properties.
- * @type {Record<string, CratingValidationStruct>}
+ * @type {Record<keyof CraftingItem, CratingValidationStruct>}
  * @see {@link CratingValidationStruct}
  * @todo Let the Validate/GetDefault functions take the respective attribute rather than the entire {@link CraftingItem}
  */
-declare const CraftingValidationRecord: Record<string, CratingValidationStruct>;
+declare const CraftingValidationRecord: Record<keyof CraftingItem, CratingValidationStruct>;

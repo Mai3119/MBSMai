@@ -19,10 +19,7 @@ export class PreferenceScreenProxy extends ScreenProxy {
                 Run: PreferenceRun,
                 Click: PreferenceClick,
                 Exit: PreferenceExit,
-                Load: () => {
-                    CommonSetScreen("Character", "Preference");
-                    PreferenceLoad();
-                },
+                Load: () => CommonSetScreen("Character", "Preference"),
                 Unload: CommonNoop,
                 Resize: CommonNoop,
                 KeyDown: CommonNoop,
@@ -111,8 +108,7 @@ MBS_MOD_API.hookFunction("PreferenceClick", 3, (args, next) => {
     const previousScreen = PreferenceSubscreen;
     next(args);
     if (!previousScreen && <string>PreferenceSubscreen === MBSPreferenceScreen.screen) {
-        PreferenceSubscreen = "";
-        PreferenceMessage = "";
+        PreferenceExit();
         const subScreen = new MBSPreferenceScreen(preferenceState, preferenceState.character);
         preferenceState.children.set(subScreen.screen, subScreen);
         return subScreen.load();

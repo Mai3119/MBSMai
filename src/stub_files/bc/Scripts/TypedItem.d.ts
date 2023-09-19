@@ -9,22 +9,22 @@ declare function TypedItemRegister(asset: Asset, config: TypedItemConfig): Typed
 /**
  * Parse and pre-process the passed item options.
  * @param {Asset} asset - The item options asset
- * @param {readonly TypedItemOptionBase[]} protoOptions - The unparsed extended item options
+ * @param {readonly TypedItemOptionConfig[]} protoOptions - The unparsed extended item options
  * @param {boolean} [changeWhenLocked] - See {@link TypedItemConfig.ChangeWhenLocked}
  * @returns {TypedItemOption[]} The newly generated extended item options
  */
-declare function TypedItemBuildOptions(protoOptions: readonly TypedItemOptionBase[], asset: Asset, changeWhenLocked?: boolean): TypedItemOption[];
+declare function TypedItemBuildOptions(protoOptions: readonly TypedItemOptionConfig[], asset: Asset, changeWhenLocked?: boolean): TypedItemOption[];
 /**
  * Parse the passed typed item draw data as passed via the extended item config
  * @param {Asset} asset - The asset in question
- * @param {ExtendedItemConfigDrawData<{ drawImage?: boolean }> | undefined} drawData - The to-be parsed draw data
- * @param {number} nOptions - The number of extended item options
- * @param {boolean} drawImage - Whether to draw images or not
+ * @param {ExtendedItemConfigDrawData<Partial<ElementMetaData.Typed>> | undefined} drawData - The to-be parsed draw data
+ * @param {readonly { Name: string }[]} options - The list of extended item options
+ * @param {Partial<ElementMetaData.Typed>} overrideMetaData
  * @return {ExtendedItemDrawData<ElementMetaData.Typed>} - The parsed draw data
  */
-declare function TypedItemGetDrawData(asset: Asset, drawData: ExtendedItemConfigDrawData<{
-    drawImage?: boolean;
-}> | undefined, nOptions: number, drawImage?: boolean): ExtendedItemDrawData<ElementMetaData.Typed>;
+declare function TypedItemGetDrawData(asset: Asset, drawData: ExtendedItemConfigDrawData<Partial<ElementMetaData.Typed>> | undefined, options: readonly {
+    Name: string;
+}[], overrideMetaData?: Partial<ElementMetaData.Typed>): ExtendedItemDrawData<ElementMetaData.Typed>;
 /**
  * Generates an asset's typed item data
  * @param {Asset} asset - The asset to generate modular item data for
@@ -119,10 +119,12 @@ declare function TypedItemGetOption(groupName: AssetGroupName, assetName: string
  * @param {Item} item - The item whose options are being validated
  * @param {T} option - The new option
  * @param {T} previousOption - The previously applied option
+ * @param {boolean} [permitExisting] - Determines whether the validation should allow the new option and previous option
+ * to be identical. Defaults to false.
  * @returns {string|undefined} - undefined or an empty string if the validation passes. Otherwise, returns a string
  * message informing the player of the requirements that are not met.
  */
-declare function TypedItemValidateOption<T extends ExtendedItemOption>(data: ExtendedItemData<T>, C: Character, item: Item, option: T, previousOption: T): string | undefined;
+declare function TypedItemValidateOption<T extends ExtendedItemOption>(data: ExtendedItemData<T>, C: Character, item: Item, option: T, previousOption: T, permitExisting?: boolean): string | undefined;
 /**
  * Sets a typed item's type and properties to the option whose name matches the provided option name parameter.
  * @param {Character} C - The character on whom the item is equipped
@@ -131,10 +133,11 @@ declare function TypedItemValidateOption<T extends ExtendedItemOption>(data: Ext
  * @param {boolean} [push] - Whether or not appearance updates should be persisted (only applies if the character is the
  * player) - defaults to false.
  * @param {null | Character} [C_Source] - The character setting the new item option. If `null`, assume that it is _not_ the player character.
+ * @param {null | [archetype: "typed" | "vibrating", screen: string]} [subscreen]
  * @returns {string|undefined} - undefined or an empty string if the type was set correctly. Otherwise, returns a string
  * informing the player of the requirements that are not met.
  */
-declare function TypedItemSetOptionByName(C: Character, itemOrGroupName: Item | AssetGroupName, optionName: string, push?: boolean, C_Source?: null | Character): string | undefined;
+declare function TypedItemSetOptionByName(C: Character, itemOrGroupName: Item | AssetGroupName, optionName: string, push?: boolean, C_Source?: null | Character, subscreen?: null | [archetype: "typed" | "vibrating", screen: string]): string | undefined;
 /**
  * Finds the currently set option on the given typed item
  * @template {TypedItemOption | VibratingItemOption} T

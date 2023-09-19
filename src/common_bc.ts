@@ -19,11 +19,11 @@ import { fortuneWheelEquip, StripLevel, getStripCondition, fortuneItemsSort } fr
 /** The maximum number of IDs within an item set category (builtin, MBS default, MBS custom) */
 const ITEM_SET_CATEGORY_ID_RANGE = 256; // 2**8
 
-/** The maximum number of IDs for ab item set. */
-const ITEM_SET_ID_RANGE = 16; // 2**4
+/** The maximum number of IDs for an item set. */
+const ITEM_SET_FLAG_COUNT = 16; // 2**4
 
 /** The maximum number of custom user-specified wheel of fortune item sets. */
-export const MBS_MAX_SETS = ITEM_SET_ID_RANGE;
+export const MBS_MAX_SETS = 32;
 
 /** A list of all valid wheel of fortune colors. */
 export const FORTUNE_WHEEL_COLORS: readonly FortuneWheelColor[] = Object.freeze([
@@ -586,13 +586,26 @@ export class FWItemSet extends FWObject<FWItemSetOption> implements Omit<FWSimpl
             throw new TypeError(`Invalid "name" type: ${typeof kwargs.name}`);
         }
 
-        if (Array.isArray(kwargs.itemList)) {
-            kwargs.itemList = Object.freeze([...kwargs.itemList]);
+        if (isArray(kwargs.itemList)) {
+            const itemList: FWItem[] = [];
+            const invalid: string[] = [];
+            for (const item of kwargs.itemList) {
+                const asset = AssetGet("Female3DCG", item.Group, item.Name);
+                if (asset == null) {
+                    invalid.push(`${item.Group}:${item.Name}`);
+                } else {
+                    itemList.push(item);
+                }
+            }
+            kwargs.itemList = Object.freeze(itemList);
+            if (invalid.length !== 0) {
+                console.warn(`MBS: Found ${invalid.length} items in wheel of fortune item set "${this.name}": ${invalid}`);
+            }
         } else {
             throw new TypeError(`Invalid "itemList" type: ${typeof kwargs.itemList}`);
         }
 
-        if (!Array.isArray(kwargs.mbsList)) {
+        if (!isArray(kwargs.mbsList)) {
             throw new TypeError(`Invalid "mbsList" type: ${typeof kwargs.mbsList}`);
         }
 
@@ -703,12 +716,15 @@ export class FWItemSet extends FWObject<FWItemSetOption> implements Omit<FWSimpl
          */
         let start: number;
         if (!this.custom) {
-            start = ITEM_SET_CATEGORY_ID_RANGE + DEFAULT_ITEM_SET_INDEX[this.name] * ITEM_SET_ID_RANGE;
+            start = ITEM_SET_CATEGORY_ID_RANGE + DEFAULT_ITEM_SET_INDEX[this.name] * ITEM_SET_FLAG_COUNT;
             if (Number.isNaN(start)) {
                 throw new Error(`Unknown default item set "${this.name}"`);
             }
         } else {
-            start = 2 * ITEM_SET_CATEGORY_ID_RANGE + this.index * ITEM_SET_ID_RANGE;
+            // Stagger the itemset/command IDs:
+            // 16 items sets followed by 16 commands, followed by 16 item sets, etc
+            const offset = 2 + Math.floor(this.index / 16);
+            start = offset * ITEM_SET_CATEGORY_ID_RANGE + this.index * ITEM_SET_FLAG_COUNT;
             if (start < 0) {
                 throw new Error(`Item set "${this.name}" absent from currently selected fortune wheel sets`);
             }
@@ -818,7 +834,10 @@ export class FWCommand extends FWObject<FWCommandOption> implements FWSimpleComm
      * @returns A list of wheel of fortune options
      */
     toOptions(colors: readonly FortuneWheelColor[] = FORTUNE_WHEEL_COLORS): FWCommandOption[] {
-        const ID = 3 * ITEM_SET_CATEGORY_ID_RANGE + this.index;
+        // Stagger the itemset/command IDs:
+        // 16 items sets followed by 16 commands, followed by 16 item sets, etc
+        const offset = 3 + Math.floor(this.index / 16);
+        const ID = offset * ITEM_SET_CATEGORY_ID_RANGE + this.index;
         return [{
             ID: String.fromCharCode(ID),
             Color: randomElement(colors),

@@ -1,9 +1,4 @@
 /**
- * Returns TRUE if the player and the current character can play Club Card
- * @returns {boolean} - Returns TRUE if both aren't restrained
- */
-declare function LARPCanPlayClubCard(): boolean;
-/**
  * Loads the LARP introduction room NPC
  * @returns {void} - Nothing
  */
@@ -24,16 +19,6 @@ declare function LARPClick(): void;
  * @returns {void} - Nothing
  */
 declare function LARPSelectClass(NewClass: string): void;
-/**
- * When the player starts a club card game
- * @returns {void} - Nothing
- */
-declare function LARPClubCardStart(): void;
-/**
- * When the player ends a club card game
- * @returns {void} - Nothing
- */
-declare function LARPClubCardEnd(): void;
 declare var LARPBackground: string;
 /** @type {null | NPCCharacter} */
 declare var LARPOrganiser: null | NPCCharacter;

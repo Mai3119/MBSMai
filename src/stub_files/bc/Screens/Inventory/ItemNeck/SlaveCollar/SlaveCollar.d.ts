@@ -15,11 +15,7 @@ declare var InventoryItemNeckSlaveCollarColorMode: boolean;
 /** @type {ItemColor} */
 declare var InventoryItemNeckSlaveCollarColor: ItemColor;
 declare var InventoryItemNeckSlaveCollarOffset: number;
-/** @type {{ Name: string, Property: ItemProperties & { Type: null | string }, Image: string }[]} */
-declare var InventoryItemNeckSlaveCollarTypes: {
-    Name: string;
-    Property: ItemProperties & {
-        Type: null | string;
-    };
+/** @type {(TypedItemOption & { Image: string })[]} */
+declare var InventoryItemNeckSlaveCollarTypes: (TypedItemOption & {
     Image: string;
-}[];
+})[];

@@ -322,6 +322,11 @@ declare function DialogRemove(): void;
  */
 declare function DialogRemoveGroup(GroupName: string): void;
 /**
+ * Generic function that sets timers for expression changes, if the player'S expressions have been altered by the dialog
+ * @returns {void} - Nothing
+ */
+declare function DialogEndExpression(): void;
+/**
  * Performs a "Back" action through the menu "stack".
  */
 declare function DialogMenuBack(): void;
@@ -774,7 +779,7 @@ declare function DialogDrawOwnerRulesMenu(): void;
  * Sets the skill ratio for the player, will be a % of effectiveness applied to the skill when using it.
  * This way a player can use only a part of her bondage or evasion skill.
  * @param {SkillType} SkillType - The name of the skill to influence
- * @param {string} NewRatio - The ratio of this skill that should be used
+ * @param {string} NewRatio - The ration of this skill that should be used
  * @returns {void} - Nothing
  */
 declare function DialogSetSkillRatio(SkillType: SkillType, NewRatio: string): void;
@@ -901,6 +906,9 @@ declare var DialogActivityMode: boolean;
 declare var DialogLockMenu: boolean;
 /** @deprecated Use DialogMenuMode. */
 declare var DialogCraftingMenu: boolean;
+declare var DialogAllowBlush: boolean;
+declare var DialogAllowEyebrows: boolean;
+declare var DialogAllowFluids: boolean;
 /**
  * The group that was selected before we entered the expression coloring screen
  * @type {{mode: DialogMenuMode, group: AssetItemGroup}}

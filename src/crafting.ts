@@ -6,7 +6,7 @@ import { MBS_MOD_API, waitFor, padArray } from "common";
 import { settingsMBSLoaded } from "common_bc";
 import { pushMBSSettings } from "settings";
 
-const BC_SLOT_MAX_ORIGINAL = 80;
+const BC_SLOT_MAX_ORIGINAL = 400;
 const MBS_SLOT_MAX_ORIGINAL = 400;
 
 /** Serialize the passed crafting items. */
@@ -87,66 +87,103 @@ function loadCraftingCache(character: Character, craftingCache: string = ""): vo
             } else {
                 break;
             }
-        } else {
-            character.Crafting.push(item);
         }
+        character.Crafting.push(item);
     }
-
-    /**
-     * One or more validation errors were encountered that were successfully resolved;
-     * push the fixed items back to the server
-     */
-    if (refresh && character.IsPlayer()) {
-        CraftingSaveServer();
+    if (refresh) {
+        setTimeout(() => {
+            refreshCraftingWindow(character, true);
+        }, 1000);
     }
 }
 
-waitFor(settingsMBSLoaded).then(() => {
-    console.log("MBS: Initializing crafting hooks");
-
-    // Mirror the extra MBS-specific crafted items to the MBS settings
-    MBS_MOD_API.hookFunction("CraftingSaveServer", 0, (args, next) => {
-        next(args);
-        Player.MBSSettings.CraftingCache = craftingSerialize(
-            Player.Crafting ? Player.Crafting.slice(BC_SLOT_MAX_ORIGINAL) : null,
-        );
-        pushMBSSettings();
+/**
+ * Update the crafting cache for a character.
+ * @param character The character in question
+ */
+async function updateCraftingCache(character: Character): Promise<void> {
+    if (!character.Crafting) {
+        return;
+    }
+    const packet = craftingSerialize(character.Crafting);
+    const compressed = LZString.compressToUTF16(packet);
+    const result = await MBS_MOD_API("crafting_cache_update", {
+        AccountID: character.AccountID,
+        Cache: compressed,
     });
+    if (result) {
+        character.CraftingCache = compressed;
+    }
+}
 
-    MBS_MOD_API.patchFunction("DialogDrawCrafting", {
-        '1000, 0, 975 - DialogMenuButton.length * 110, 125, "White", null, 3':
-            '1000, 0, 975 - DialogMenuButton.length * 110, 125, "White", null, 2',
+/**
+ * Initialize the crafting module.
+ */
+export async function initializeCraftingModule(): Promise<void> {
+    if (!settingsMBSLoaded()) {
+        await waitFor(() => settingsMBSLoaded());
+    }
+    pushMBSSettings();
+    loadCraftingCache(character, character.CraftingCache);
+}
 
-        '1050, 200, 900, 125, "White", null, 3':
-            '1050, 150, 900, 125, "White", null, 2',
+/**
+ * Crafting menu offset.
+ */
+let CraftingOffset = 0;
 
-        '1050, 400, 900, 125, "White", null, 3':
-            '1050, 300, 900, 125, "White", null, 2',
+/**
+ * Generate the crafting menu.
+ * @param character The character in question
+ */
+function generateCraftingMenu(character: Character): void {
+    const craftingMenu = new Menu();
 
-        '1050, 600, 900, 125, "White", null, 3':
-            '1050, 450, 900, 125, "White", null, 2',
+    for (let i = CraftingOffset; i < CraftingOffset + 20; i++) {
+        const item = character.Crafting[i];
+        if (item) {
+            const menuItem = new MenuItem(item.Name, item.Description, async () => {
+                // Handle crafting menu item selection
+                await craftItem(character, item);
+            });
+            craftingMenu.add(menuItem);
+        }
+    }
 
-        '1050, 800, 900, 125, "White", null, 3':
-            '1050, 600, 900, 215, "White", null, 7',
-    });
+    craftingMenu.draw();
+}
 
-    MBS_MOD_API.patchFunction("CraftingModeSet", {
-        'ElementCreateInput("InputDescription", "text", "", "100");':
-            'ElementCreateInput("InputDescription", "text", "", "200");',
-    });
+/**
+ * Handle the crafting menu navigation.
+ * @param character The character in question
+ * @param direction The navigation direction
+ */
+function navigateCraftingMenu(character: Character, direction: "next" | "previous"): void {
+    if (direction === "next") {
+        CraftingOffset += 20;
+        if (CraftingOffset >= BC_SLOT_MAX_ORIGINAL) {
+            CraftingOffset = 0;
+        }
+    } else if (direction === "previous") {
+        CraftingOffset -= 20;
+        if (CraftingOffset < 0) {
+            CraftingOffset = BC_SLOT_MAX_ORIGINAL - 20;
+        }
+    }
+    generateCraftingMenu(character);
+}
 
-    MBS_MOD_API.patchFunction("CraftingClick", {
-    "if (CraftingOffset < 0) CraftingOffset = 400 - 20;":
-        `if (CraftingOffset < 0) CraftingOffset = ${MBS_SLOT_MAX_ORIGINAL} - 20;`,
-    "if (CraftingOffset >= 400) CraftingOffset = 0;":
-        `if (CraftingOffset >= ${MBS_SLOT_MAX_ORIGINAL}) CraftingOffset = 0;`,
+/**
+ * Craft an item.
+ * @param character The character in question
+ * @param item The item to craft
+ */
+async function craftItem(character: Character, item: CraftingItem): Promise<void> {
+    // Craft the item logic
+    // ...
+    // ...
+}
 
-    });
-
-    MBS_MOD_API.patchFunction("CraftingRun", {
-        "/ ${80 / 20}.":
-            `/ ${MBS_SLOT_MAX_ORIGINAL / 20}.`,
-    });
-
-    loadCraftingCache(Player, Player.MBSSettings.CraftingCache);
-});
+/**
+ * Decompress the server data for crafting.
+ * @param data The compressed data

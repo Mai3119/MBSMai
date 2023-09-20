@@ -30,10 +30,9 @@ declare function CollegeChessGameStart(Difficulty: number, Bet: string): void;
 declare function CollegeChessStrip(C: any): void;
 /**
  * In bondage chess, a player can get restrained progressively
- * @param {Character} C
  * @returns {void} - Nothing, the returns are quick exit short cuts
  */
-declare function CollegeChessRestrain(C: Character): void;
+declare function CollegeChessRestrain(C: any): void;
 /**
  * Called from the chess game to see if we must apply changes (strip or restrain) any opponent
  * @returns {void} - Nothing

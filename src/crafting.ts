@@ -11,7 +11,7 @@ let R94BETA1_OR_LATER: boolean;
 let R94_OR_LATER: boolean;
 
 const MBS_CRAFTING_MAX = Object.freeze({
-    "default": 400,
+    "default": 300,
     "pre_v0_6_8": 100,
 });
 const BC_CRAFTING_MAX = Object.freeze({

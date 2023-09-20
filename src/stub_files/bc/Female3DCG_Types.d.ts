@@ -37,9 +37,6 @@ interface AssetGroupDefinition {
 	PreviewZone?: [number, number, number, number];
 	DynamicGroupName?: AssetGroupName;
 	MirrorActivitiesFrom?: AssetGroupItemName;
-
-	/** The group actually recieving arousal events. Used to proxy around a group that does not have activities enabled (and thus arousal settings) */
-	ArousalZone?: AssetGroupItemName;
 	ColorSuffix?: Record<string, string>;
 	ExpressionPrerequisite?: AssetPrerequisite[];
 	HasPreviewImages?: boolean;
@@ -322,8 +319,6 @@ interface AssetDefinition {
 
 	/** A list of prerequisite checks that must pass for the group's expressions to be selectable */
 	ExpressionPrerequisite?: AssetPrerequisite[];
-
-	ColorSuffix?: Record<string, string>;
 }
 
 interface AssetLayerDefinition {
@@ -404,7 +399,6 @@ interface AssetLayerDefinition {
 	HideForAttribute?: AssetAttribute[];
 	/* Specifies that this layer should not be drawn unless the character is wearing an item with one of the given attributes */
 	ShowForAttribute?: AssetAttribute[];
-	ColorSuffix?: Record<string, string>;
 }
 
 type ExtendedArchetype = "modular" | "typed" | "vibrating" | "variableheight" | "text";
@@ -422,9 +416,6 @@ type ExtendedItemGroupConfig = Record<string, AssetArchetypeConfig>;
 
 /** A union of all (non-abstract) extended item configs */
 type AssetArchetypeConfig = TypedItemConfig | ModularItemConfig | VibratingItemConfig | VariableHeightConfig | TextItemConfig;
-
-/** A union of all (non-abstract) extended item datas */
-type AssetArchetypeData = TypedItemData | ModularItemData | VibratingItemData | VariableHeightData | TextItemData;
 
 interface ExtendedItemConfig<OptionType extends ExtendedItemOption> {
 	/** The archetype of the extended item config */
@@ -459,8 +450,8 @@ interface ExtendedItemConfig<OptionType extends ExtendedItemOption> {
 	DrawData?: ExtendedItemConfigDrawData<{}>;
 }
 
-/** Defines a single (partially parsed) extended item option */
-interface ExtendedItemOptionConfig {
+/** Defines a single extended item option */
+interface ExtendedItemOption {
 	/** The name of the type - used for the preview icon and the translation key in the CSV */
 	Name: string;
 	/** The required bondage skill level for this option */
@@ -493,12 +484,6 @@ interface ExtendedItemOptionConfig {
 	AllowSelfSelect?: boolean;
 	/** A buy group to check for that option to be available */
 	PrerequisiteBuyGroup?: string;
-	/** If the option has an archetype, sets the config to use */
-	ArchetypeConfig?: null | AssetArchetypeConfig;
-}
-
-/** Defines a single (fully parsed) extended item option */
-interface ExtendedItemOption extends Omit<ExtendedItemOptionConfig, "ArchetypeConfig"> {
 	/**
 	 * A unique identifier of the struct type.
 	 * Its value must be automatically assigned if it's an archetypical extended item option.
@@ -506,10 +491,42 @@ interface ExtendedItemOption extends Omit<ExtendedItemOptionConfig, "ArchetypeCo
 	 * then its value must be set `"ExtendedItemOption"`.
 	 */
 	OptionType: "ExtendedItemOption" | "TypedItemOption" | "VariableHeightOption" | "ModularItemOption" | "VibratingItemOption" | "TextItemOption";
-	/** The extended item data associated with this option */
-	ParentData: ExtendedItemData<any>;
-	/** The extended item data of the subscreen associated with this option (if any) */
-	ArchetypeData?: null | AssetArchetypeData;
+}
+
+/** Extended item option subtype for typed items */
+interface TypedItemOptionBase extends Omit<ExtendedItemOption, "OptionType"> {
+	Property?: Omit<ItemProperties, "Type">;
+	/** If the option has an archetype, sets the config to use */
+	ArchetypeConfig?: VibratingItemConfig | VariableHeightConfig | TextItemConfig;
+	/** Whether or not this option can be selected randomly */
+	Random?: boolean;
+	NPCDefault?: boolean;
+}
+
+/** Extended item option subtype for typed items */
+interface TypedItemOption extends Omit<TypedItemOptionBase, "ArchetypeConfig"> {
+	OptionType: "TypedItemOption";
+	/** If the option has an archetype, sets the data to use */
+	ArchetypeData?: VibratingItemData | VariableHeightData | TextItemData;
+	Property: ItemProperties & Pick<Required<ItemProperties>, "Type">;
+}
+
+/** Extended item option subtype for vibrating items */
+interface VibratingItemOption extends ExtendedItemOption {
+	OptionType: "VibratingItemOption";
+	Name: VibratorMode;
+	Property: ItemProperties & Pick<Required<ItemProperties>, "Mode" | "Intensity" | "Effect">;
+	/** If the option has a subscreen, this can set a particular archetype to use */
+	Archetype?: ExtendedArchetype;
+	/** If the option has an archetype, sets the config to use */
+	ArchetypeConfig?: ExtendedItemConfig<any>;
+}
+
+/** Extended item option subtype for vibrating items */
+interface VariableHeightOption extends ExtendedItemOption {
+	OptionType: "VariableHeightOption";
+	Property: Pick<Required<ItemProperties>, "OverrideHeight">;
+	Name: "newOption" | "previousOption";
 }
 
 /**
@@ -557,30 +574,13 @@ type ExtendedItemNPCCallback<OptionType extends ExtendedItemOption> = (
 
 //#region Typed items
 
-
-/** Partially parsed extended item option subtype for typed items */
-interface TypedItemOptionConfig extends ExtendedItemOptionConfig {
-	Property?: Omit<ItemProperties, "Type">;
-	/** Whether or not this option can be selected randomly */
-	Random?: boolean;
-	/** Whether this option should be picked as default for NPC's (rather than just going for the first option) */
-	NPCDefault?: boolean;
-}
-
-/** Extended item option subtype for typed items */
-interface TypedItemOption extends Omit<TypedItemOptionConfig, "ArchetypeConfig">, ExtendedItemOption {
-	OptionType: "TypedItemOption";
-	Property: ItemProperties & Pick<Required<ItemProperties>, "Type">;
-	ParentData: TypedItemData;
-}
-
 type TypedItemChatSetting = "default" | "fromTo" | "silent";
 
 /** An object defining all of the required configuration for registering a typed item */
 interface TypedItemConfig extends ExtendedItemConfig<TypedItemOption> {
 	Archetype: "typed";
 	/** The list of extended item options available for the item */
-	Options?: TypedItemOptionConfig[];
+	Options?: TypedItemOptionBase[];
 	/** The optional text configuration for the item. Custom text keys can be configured within this object */
 	DialogPrefix?: {
 		/** The dialogue prefix for the player prompt that is displayed on each module's menu screen */
@@ -634,7 +634,7 @@ type ExtendedItemDictionaryCallback<OptionType extends ExtendedItemOption> = (
 interface ModularItemConfig extends ExtendedItemConfig<ModularItemOption> {
 	Archetype: "modular";
 	/** The module definitions for the item */
-	Modules?: ModularItemModuleConfig[];
+	Modules?: ModularItemModuleBase[];
 	/**
 	 * The item's chatroom message setting. Determines the level of
 	 * granularity for chatroom messages when the item's module values change.
@@ -669,7 +669,7 @@ interface ModularItemConfig extends ExtendedItemConfig<ModularItemOption> {
 type ModularItemChatSetting = "default" | "perModule";
 
 /** A (partially parsed) object describing a single module for a modular item. */
-interface ModularItemModuleConfig {
+interface ModularItemModuleBase {
 	/** The name of this module - this is usually a human-readable string describing what the
 	 * module represents (e.g. Straps). It is used for display text keys, and should be unique across all of the modules
 	 * for the item.
@@ -681,7 +681,7 @@ interface ModularItemModuleConfig {
 	 */
 	Key: string;
 	/** The list of option definitions that can be chosen within this module. */
-	Options: ModularItemOptionConfig[];
+	Options: ModularItemOptionBase[];
 	/** Whether or not this module can be selected by the wearer */
 	AllowSelfSelect?: boolean;
 	/** A unique (automatically assigned) identifier of the struct type */
@@ -692,7 +692,7 @@ interface ModularItemModuleConfig {
 }
 
 /** An object describing a single module for a modular item. */
-interface ModularItemModule extends Omit<ModularItemModuleConfig, "DrawData"> {
+interface ModularItemModule extends Omit<ModularItemModuleBase, "DrawData"> {
 	/** A unique (automatically assigned) identifier of the struct type */
 	OptionType: "ModularItemModule";
 	/** The list of option definitions that can be chosen within this module. */
@@ -702,8 +702,8 @@ interface ModularItemModule extends Omit<ModularItemModuleConfig, "DrawData"> {
 	drawData: ExtendedItemDrawData<ElementMetaData.Typed>;
 }
 
-/** Partially parsed extended item option subtype for modular items */
-interface ModularItemOptionConfig extends Omit<ExtendedItemOptionConfig, "Name"> {
+/** A (partially parsed) object describing a single option within a module for a modular item. */
+interface ModularItemOptionBase extends Omit<ExtendedItemOption, "OptionType" | "Name"> {
 	/** The additional difficulty associated with this option - defaults to 0 */
 	Difficulty?: number;
 	/** A list of groups that this option blocks - defaults to [] */
@@ -722,11 +722,13 @@ interface ModularItemOptionConfig extends Omit<ExtendedItemOptionConfig, "Name">
 	SetPose?: AssetPoseName;
 	/** A list of activities enabled by that module */
 	AllowActivity?: ActivityName[];
+	/** If the option has an archetype, sets the config to use */
+	ArchetypeConfig?: VibratingItemConfig | VariableHeightConfig | TextItemConfig;
 	Property?: Omit<ItemProperties, "Type">;
 }
 
-/** Extended item option subtype for modular items */
-interface ModularItemOption extends Omit<ModularItemOptionConfig, "ArchetypeConfig">, Omit<ExtendedItemOption, "Property"> {
+/** An object describing a single option within a module for a modular item. */
+interface ModularItemOption extends Omit<ModularItemOptionBase, "ArchetypeConfig"> {
 	/** The name of the option; automatically set to {@link ModularItemModule.Key} + the option's index */
 	Name: string;
 	/** A unique (automatically assigned) identifier of the struct type */
@@ -735,26 +737,13 @@ interface ModularItemOption extends Omit<ModularItemOptionConfig, "ArchetypeConf
 	ModuleName: string;
 	/** The option's (automatically assigned) index within the parent module */
 	Index: number;
-	ParentData: ModularItemData;
+	/** If the option has an archetype, sets the data to use */
+	ArchetypeData?: VibratingItemData | VariableHeightData | TextItemData;
 }
 
 //#endregion
 
 //#region Vibrating Items
-
-/** Partially parsed extended item option subtype for vibrating items */
-interface VibratingItemOptionConfig extends ExtendedItemOptionConfig {
-	Name: VibratorMode;
-	Property: ItemProperties & Pick<Required<ItemProperties>, "Mode" | "Intensity" | "Effect">;
-	ArchetypeConfig?: null;
-}
-
-/** Extended item option subtype for vibrating items */
-interface VibratingItemOption extends Omit<VibratingItemOptionConfig, "ArchetypeConfig">, Omit<ExtendedItemOption, "Name" | "Property"> {
-	OptionType: "VibratingItemOption";
-	ParentData: VibratingItemData;
-	ArchetypeData?: null;
-}
 
 /** An object defining all of the required configuration for registering a vibrator item */
 interface VibratingItemConfig extends ExtendedItemConfig<VibratingItemOption> {
@@ -786,15 +775,6 @@ type VibratorModeSet = "Standard" | "Advanced";
 //#endregion
 
 //#region Variable Height items
-
-/** Extended item option subtype for variable height items */
-interface VariableHeightOption extends ExtendedItemOption {
-	OptionType: "VariableHeightOption";
-	Property: Pick<Required<ItemProperties>, "OverrideHeight">;
-	Name: "newOption" | "previousOption";
-	ParentData: VariableHeightData;
-	ArchetypeData?: null;
-}
 
 interface VariableHeightConfig extends ExtendedItemConfig<VariableHeightOption> {
 	Archetype: "variableheight";
@@ -849,13 +829,11 @@ interface TextItemConfig extends ExtendedItemConfig<TextItemOption> {
 	Font?: null | string;
 }
 
-/** Extended item option subtype for text-supporting items */
+/** Extended item option subtype for vibrating items */
 interface TextItemOption extends ExtendedItemOption {
 	OptionType: "TextItemOption";
 	Property: TextItemRecord<string>;
 	Name: "newOption" | "previousOption";
-	ParentData: TextItemData;
-	ArchetypeData?: null;
 }
 
 //#endregion

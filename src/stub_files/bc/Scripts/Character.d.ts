@@ -22,17 +22,16 @@ declare function CharacterDialogSubstitution(C: Character): void;
  * Builds the dialog objects from the character CSV file
  * @param {Character} C - Character for which to build the dialog
  * @param {readonly string[][]} CSV - Content of the CSV file
- * @param {string} functionPrefix - A prefix that will be added to functions that aren't part of the Dialog or ChatRoom "namespace"
  * @returns {void} - Nothing
  */
-declare function CharacterBuildDialog(C: Character, CSV: readonly string[][], functionPrefix: string): void;
+declare function CharacterBuildDialog(C: Character, CSV: readonly string[][]): void;
 /**
  * Loads the content of a CSV file to build the character dialog. Can override the current screen.
  * @param {Character} C - Character for which to build the dialog objects
- * @param {DialogInfo} [info]
+ * @param {string} [Override] - Optional: Path to the specific CSV to build the character dialog with
  * @returns {void} - Nothing
  */
-declare function CharacterLoadCSVDialog(C: Character, info?: DialogInfo): void;
+declare function CharacterLoadCSVDialog(C: Character, Override?: string): void;
 /**
  * Sets the clothes based on a character archetype
  * @param {Character} C - Character to set the clothes for
@@ -479,12 +478,12 @@ declare function CharacterScriptRemove(C: Character): void;
 /** @type Character[] */
 declare var Character: Character[];
 declare var CharacterNextId: number;
-/** @type {Map<BlindEffectName, number>} */
-declare const CharacterBlindLevels: Map<BlindEffectName, number>;
-/** @type {Map<DeafEffectName, number>} */
-declare const CharacterDeafLevels: Map<DeafEffectName, number>;
-/** @type {Map<BlurEffectName, number>} */
-declare const CharacterBlurLevels: Map<BlurEffectName, number>;
+/** @type Map<EffectName, number> */
+declare const CharacterBlindLevels: Map<EffectName, number>;
+/** @type Map<EffectName, number> */
+declare const CharacterDeafLevels: Map<EffectName, number>;
+/** @type Map<EffectName, number> */
+declare const CharacterBlurLevels: Map<EffectName, number>;
 /**
  * An enum representing the various character archetypes
  * ONLINE: The player, or a character representing another online player

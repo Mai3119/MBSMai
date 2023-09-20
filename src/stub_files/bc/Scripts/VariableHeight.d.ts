@@ -28,7 +28,7 @@ declare function VariableHeightLoad(data: VariableHeightData): void;
  * @param {VariableHeightData} data - The variable height data for the asset
  * @returns {void} - Nothing
  */
-declare function VariableHeightDraw(data: VariableHeightData): void;
+declare function VariableHeightDraw({ dialogPrefix, drawData }: VariableHeightData): void;
 /**
  * @param {VariableHeightData} data - The variable height data for the asset
  * @returns {void} - Nothing
@@ -74,11 +74,10 @@ declare function VariableHeightSetOverrideHeight(property: ItemProperties, heigh
 declare function VariableHeightInit(Data: VariableHeightData, C: Character, Item: Item, Refresh: boolean): boolean;
 /**
  * Dynamically construct the next and previous extended item option for the passed item
- * @param {VariableHeightData} data - The extended item data
  * @param {Item} item - The item in question
  * @returns {{ newOption: VariableHeightOption, previousOption: VariableHeightOption }}
  */
-declare function VariableHeightConstructOptions(data: VariableHeightData, item: Item): {
+declare function VariableHeightConstructOptions(item: Item): {
     newOption: VariableHeightOption;
     previousOption: VariableHeightOption;
 };

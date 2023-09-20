@@ -139,7 +139,7 @@ declare const chineseRegex: RegExp;
 declare const chineseRandomGarbledSound: string[];
 /**
  * A lookup mapping the gag effect names to their corresponding gag level numbers.
- * @type {Record<GagEffectName, number>}
+ * @type {Partial<Record<EffectName, number>>}
  * @constant
  */
-declare var SpeechGagLevelLookup: Record<GagEffectName, number>;
+declare var SpeechGagLevelLookup: Partial<Record<EffectName, number>>;

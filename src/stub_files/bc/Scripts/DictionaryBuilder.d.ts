@@ -124,13 +124,6 @@ declare class DictionaryBuilder {
      */
     targetCharacterName(character: Character): this;
     /**
-     * Adds a dictionary entry which identifies a given group.
-     * @param {string} tag - The tag to use as the substitution
-     * @param {AssetGroupName} groupName - The name of the group
-     * @returns {this}
-     */
-    group(tag: string, groupName: AssetGroupName): this;
-    /**
      * Adds a dictionary entry which identifies the focused group - the group that was acted upon to generate the message, if applicable.
      * @param {AssetGroupItemName} groupName - The name of the focus group
      * @returns {this}
@@ -138,12 +131,9 @@ declare class DictionaryBuilder {
     focusGroup(groupName: AssetGroupItemName): this;
     /**
      * Adds a dictionary entry which identifies an asset - usually the asset being changed, but the tag can be customized.
-     * @param {Asset} asset - The asset in question
-     * @param {string} [tag] - The tag to replace
-     * @param {string} [craftName] - The name of the crafted item if applicable
-     * @returns {this}
+     * @param {Asset} asset
      */
-    asset(asset: Asset, tag?: string, craftName?: string): this;
+    asset(asset: Asset, tag?: string): DictionaryBuilder;
     /**
      * Adds a text dictionary entry. This is a straightforward dictionary entry where the provided tag will be directly
      * replaced by the given text.

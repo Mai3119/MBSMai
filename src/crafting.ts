@@ -136,10 +136,11 @@ waitFor(settingsMBSLoaded).then(() => {
     });
 
     MBS_MOD_API.patchFunction("CraftingClick", {
-        "if (CraftingOffset < 0) CraftingOffset = 80 - 20;":
-            `if (CraftingOffset < 0) CraftingOffset = ${MBS_SLOT_MAX_ORIGINAL} - 20;`,
-        "if (CraftingOffset >= 80) CraftingOffset = 0;":
-            `if (CraftingOffset >= ${MBS_SLOT_MAX_ORIGINAL}) CraftingOffset = 0;`,
+    "if (CraftingOffset < 0) CraftingOffset = 400 - 20;":
+        `if (CraftingOffset < 0) CraftingOffset = ${MBS_SLOT_MAX_ORIGINAL} - 20;`,
+    "if (CraftingOffset >= 400) CraftingOffset = 0;":
+        `if (CraftingOffset >= ${MBS_SLOT_MAX_ORIGINAL}) CraftingOffset = 0;`,
+
     });
 
     MBS_MOD_API.patchFunction("CraftingRun", {
